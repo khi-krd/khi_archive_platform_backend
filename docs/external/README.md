@@ -30,7 +30,7 @@ live in [`../internal/`](../internal/README.md) and are not for public consumpti
 | [`08-corrections.md`](./08-corrections.md) | `POST /api/corrections` plus the submitter's own views: the correction object, `CorrectionMediaType` values, choosing `targetField`, the status lifecycle, and what a submitter can and cannot see | You are building the "Help Us" form, or a resubmission fails with `CORRECTION_ALREADY_PROCESSED` and you need the lifecycle rules |
 | [`09-recipes.md`](./09-recipes.md) | Eight end-to-end curl walkthroughs chaining the endpoints: home page, search-as-you-type, project page, audio playback, text plus cover, register and log in with a cookie jar, submit and poll a correction, and paginate a large result set | You want a known-good sequence to copy rather than assembling four endpoint pages yourself, or a multi-call flow works in isolation but breaks when chained |
 | [`10-website-search.md`](./10-website-search.md) | `GET /api/guest/media/search` and `GET /api/guest/media/{type}/{code}` — one keyword across audio, video, image and text, merged and ranked on a single scale, with per-kind tab counts, refine facets over the matched set, and a kind-agnostic detail lookup | You are building the public website's search page — the visitor picks the platform as their search source and expects the media this archive holds about their keyword, whichever kind it is |
-| [`11-search-frontend-guide.md`](./11-search-frontend-guide.md) | The implementation guide for the search UI: the service module, URL-as-state, the fetch hook with abort and race-guard, the tab bar, one result card for four kinds, the refine panel, the detail page, RTL handling, and a QA matrix | You are writing the search page itself and want the files, in order, with the code that goes in them |
+| [`11-frontend-api-guide.md`](./11-frontend-api-guide.md) | Every one of the 29 `/api/guest/**` endpoints with its full request parameters and complete JSON response, the shared object shapes they return, live `curl` examples against the production base URL, and the error envelope | You are writing frontend code against this API and need the exact parameters to send and the exact fields that come back |
 
 ## Start here
 
@@ -42,7 +42,8 @@ live in [`../internal/`](../internal/README.md) and are not for public consumpti
    set, before you write feature code.
 4. The endpoint page for what you are building:
    [`10-website-search.md`](./10-website-search.md) for the website's search page and
-   [`11-search-frontend-guide.md`](./11-search-frontend-guide.md) to build its UI,
+   [`11-frontend-api-guide.md`](./11-frontend-api-guide.md) for the request/response
+   detail of every public endpoint,
    [`04-discovery.md`](./04-discovery.md) for trending, autocomplete and the browse feed,
    [`05-catalog.md`](./05-catalog.md) plus [`06-media.md`](./06-media.md) for detail
    pages, [`07-streaming.md`](./07-streaming.md) for playback,

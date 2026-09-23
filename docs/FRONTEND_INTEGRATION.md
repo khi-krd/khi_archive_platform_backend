@@ -153,9 +153,8 @@ because Spring binds repeated arrays as `?types=image&types=audio`, not `?types[
 service that sends an array filter must do the same.
 
 Building the search page is the place this bites first: `tag`, `keyword`, `subject` and `genre` all
-repeat. See [`external/11-search-frontend-guide.md`](./external/11-search-frontend-guide.md) for the
-full search UI — service module, URL-as-state, fetch hook, components — against the API documented
-in [`external/10-website-search.md`](./external/10-website-search.md).
+repeat. [`external/11-frontend-api-guide.md`](./external/11-frontend-api-guide.md) documents every
+public endpoint's request parameters and full JSON response for exactly this purpose.
 
 ---
 
@@ -178,6 +177,7 @@ ALWAYS_ALLOWED_ORIGINS (hardcoded, cannot be switched off)
   http://localhost:5173
   http://localhost:3000
   https://khi-archive-platform-frontend.vercel.app
+  https://khi-archive-platform-frontend-a5p7.vercel.app
   https://khi-archive-platform.s3.us-east-1.amazonaws.com
 + CORS_ALLOWED_ORIGINS   (comma-separated env var, empty by default)
 ```

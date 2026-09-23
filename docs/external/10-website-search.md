@@ -328,10 +328,9 @@ endpoint cannot be used to probe for the existence of non-public records.
 
 ## Website integration guide
 
-> The steps below are the short version. For the full implementation — the files to create in
-> order, the fetch hook with abort and race-guard, URL-as-state, the components, RTL handling,
-> the QA matrix and the common mistakes — see
-> [`11-search-frontend-guide.md`](./11-search-frontend-guide.md).
+> The steps below are the short version. For the request-and-response detail of this and every
+> other public endpoint — full parameter tables, complete JSON bodies, shared object shapes and
+> live `curl` examples — see [`11-frontend-api-guide.md`](./11-frontend-api-guide.md).
 
 ### 1. Wire the source selector
 
@@ -588,6 +587,6 @@ they did; this page documents an addition alongside them.
 - [`05-catalog.md`](./05-catalog.md#visibility-gate) — the visibility rules every hit has already
   passed
 - [`01-conventions.md`](./01-conventions.md) — paging, date formats, omitted `null` fields, CORS
-- [`11-search-frontend-guide.md`](./11-search-frontend-guide.md) — the frontend implementation
-  guide for everything on this page
+- [`11-frontend-api-guide.md`](./11-frontend-api-guide.md) — every public endpoint's request and
+  response JSON, including this one, written for the frontend
 - [`09-recipes.md`](./09-recipes.md) — end-to-end curl walkthroughs for the other public flows

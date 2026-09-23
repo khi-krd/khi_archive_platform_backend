@@ -17,6 +17,7 @@ public class AppCorsProperties {
             "http://localhost:5173",
             "http://localhost:3000",
             "https://khi-archive-platform-frontend.vercel.app",
+            "https://khi-archive-platform-frontend-a5p7.vercel.app",
             "https://khi-archive-platform.s3.us-east-1.amazonaws.com"
     );
 

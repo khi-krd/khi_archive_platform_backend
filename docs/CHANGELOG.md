@@ -64,13 +64,12 @@ same range, since no prior state existed.
   and carries the website integration guide: wiring the source selector, drawing the tab bar from
   `counts`, one card component for four kinds, opening a result, and building the refine panel from
   `facets`.
-- [`docs/external/11-search-frontend-guide.md`](./external/11-search-frontend-guide.md) is the
-  frontend implementation guide for that API: the files to create in order, the service module and
-  why repeated array params need `paramsSerializer: { indexes: null }`, URL-as-state so a result
-  page can be shared and reached with the back button, a fetch hook with both an abort and a
-  request-counter race guard, the tab bar / result card / refine panel / pagination components,
-  the kind-agnostic detail page, media-URL resolution, Kurdish and RTL handling, and performance,
-  accessibility, QA and common-mistake checklists.
+- [`docs/external/11-frontend-api-guide.md`](./external/11-frontend-api-guide.md) documents all 29
+  public `/api/guest/**` endpoints in one place for frontend work: every request parameter, the
+  complete JSON response with every field named and typed, the shared object shapes
+  (`MediaHit`, `Audio`, `Video`, `Image`, `Text`, `Project`, `Category`, `Person`), the `Page`
+  envelope, the error envelope, byte-proxy headers and `Range`/`ETag` behaviour, and live `curl`
+  examples against the production base URL.
 
 ### Fixed
 
@@ -86,6 +85,11 @@ same range, since no prior state existed.
 
 ### Changed
 
+- **CORS:** the frontend's current Vercel deployment,
+  `https://khi-archive-platform-frontend-a5p7.vercel.app`, is now part of the hardcoded
+  always-allowed origins in `AppCorsProperties`, next to the original
+  `khi-archive-platform-frontend.vercel.app` alias. The allowlist is exact-match, so the new
+  hostname was being rejected on every browser call until it was added.
 - `JwtTokenProvider` validates `jwt.secret` at startup and fails fast when it is blank. A blank
   `JWT_SECRET` resolves fine as a Spring placeholder, so the app used to boot normally and then
   reject every authenticated request. A secret shorter than 32 bytes logs a warning rather than
