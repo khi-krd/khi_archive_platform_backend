@@ -150,7 +150,26 @@ public enum Permission {
     KHI_LOGO_READ("khi_logo:read"),
     KHI_LOGO_CREATE("khi_logo:create"),
     KHI_LOGO_UPDATE("khi_logo:update"),
-    KHI_LOGO_DELETE("khi_logo:delete");
+    KHI_LOGO_DELETE("khi_logo:delete"),
+
+    // ── Auth Image (sign-in / register brand-panel image) ──────────────
+    // Same branding posture as the logo: ADMIN only by default. The public
+    // read for anonymous auth pages lives under /api/guest/auth-image and
+    // needs no authority at all.
+    AUTH_IMAGE_READ("auth_image:read"),
+    AUTH_IMAGE_CREATE("auth_image:create"),
+    AUTH_IMAGE_UPDATE("auth_image:update"),
+    AUTH_IMAGE_DELETE("auth_image:delete"),
+
+    // ── Site Font (admin-uploaded typeface applied site-wide) ──────────
+    // Library rows under /api/site-fonts; activation flips `active` on one
+    // row (UPDATE). Public reads + file bytes for the ACTIVE font live under
+    // /api/guest/site-font* so the login page and guest catalogue can paint
+    // the typeface before a token exists.
+    SITE_FONT_READ("site_font:read"),
+    SITE_FONT_CREATE("site_font:create"),
+    SITE_FONT_UPDATE("site_font:update"),
+    SITE_FONT_DELETE("site_font:delete");
 
     private final String permission;
 }

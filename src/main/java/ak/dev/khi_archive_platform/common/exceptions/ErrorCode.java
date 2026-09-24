@@ -66,6 +66,8 @@ public final class ErrorCode {
     public static final String PHYSICAL_MEDIA_NOT_FOUND = "PHYSICAL_MEDIA_NOT_FOUND";
     public static final String CORRECTION_NOT_FOUND   = "CORRECTION_NOT_FOUND";
     public static final String KHI_LOGO_NOT_FOUND      = "KHI_LOGO_NOT_FOUND";
+    public static final String AUTH_IMAGE_NOT_FOUND    = "AUTH_IMAGE_NOT_FOUND";
+    public static final String SITE_FONT_NOT_FOUND     = "SITE_FONT_NOT_FOUND";
 
     // ── 405 / 415 / 413 ─────────────────────────────────────────────────────
     public static final String METHOD_NOT_ALLOWED     = "METHOD_NOT_ALLOWED";

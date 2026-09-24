@@ -380,6 +380,26 @@ public class ApiExceptionHandler {
                 request, null);
     }
 
+    @ExceptionHandler(AuthImageNotFoundException.class)
+    @SuppressWarnings("unused")
+    public ResponseEntity<ApiErrorResponse> handleAuthImageNotFound(AuthImageNotFoundException ex,
+                                                                    HttpServletRequest request) {
+        return build(HttpStatus.NOT_FOUND, ErrorCode.AUTH_IMAGE_NOT_FOUND, ErrorCategory.NOT_FOUND,
+                ex.getMessage(),
+                "Upload an auth panel image first, or confirm the id.",
+                request, null);
+    }
+
+    @ExceptionHandler(SiteFontNotFoundException.class)
+    @SuppressWarnings("unused")
+    public ResponseEntity<ApiErrorResponse> handleSiteFontNotFound(SiteFontNotFoundException ex,
+                                                                    HttpServletRequest request) {
+        return build(HttpStatus.NOT_FOUND, ErrorCode.SITE_FONT_NOT_FOUND, ErrorCategory.NOT_FOUND,
+                ex.getMessage(),
+                "Upload a site font first, or confirm the id.",
+                request, null);
+    }
+
     @ExceptionHandler({NoHandlerFoundException.class, NoResourceFoundException.class})
     @SuppressWarnings("unused")
     public ResponseEntity<ApiErrorResponse> handleNotFound(Exception ex, HttpServletRequest request) {
