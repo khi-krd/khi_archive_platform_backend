@@ -245,9 +245,11 @@ final class GuestMediaHitMapper {
      */
     private static String[] titles(String original, String kurdish, String romanized,
                                    String alternative, String code) {
-        String title = firstNonBlank(original, kurdish, romanized, alternative, code);
+        // Central Kurdish is THE display title — the other title columns only
+        // fill in when no Kurdish title exists. fileName is never a title.
+        String title = firstNonBlank(kurdish, original, alternative, romanized, code);
         String subtitle = null;
-        for (String candidate : new String[]{original, kurdish, romanized, alternative}) {
+        for (String candidate : new String[]{original, romanized, alternative, kurdish}) {
             String c = blankToNull(candidate);
             if (c != null && !c.equalsIgnoreCase(title)) {
                 subtitle = c;

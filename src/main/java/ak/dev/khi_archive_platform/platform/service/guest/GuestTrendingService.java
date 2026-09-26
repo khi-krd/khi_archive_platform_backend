@@ -221,8 +221,8 @@ public class GuestTrendingService {
                     Project p = a.getProject();
                     return GuestTrendingDTO.TrendingItem.builder()
                             .rank(rank).score(score).kind("audio").code(code)
-                            .title(firstTitle(a.getOriginTitle(), a.getAlterTitle(),
-                                    a.getCentral_kurdish_title(), a.getRomanized_title(), code))
+                            .title(firstTitle(a.getCentral_kurdish_title(), a.getOriginTitle(),
+                                    a.getAlterTitle(), a.getRomanized_title(), code))
                             .thumbnail(null)
                             .projectCode(p == null ? null : p.getProjectCode())
                             .projectName(p == null ? null : p.getProjectName())
@@ -241,8 +241,8 @@ public class GuestTrendingService {
                     Project p = v.getProject();
                     return GuestTrendingDTO.TrendingItem.builder()
                             .rank(rank).score(score).kind("video").code(code)
-                            .title(firstTitle(v.getOriginalTitle(), v.getAlternativeTitle(),
-                                    v.getTitleInCentralKurdish(), v.getRomanizedTitle(), code))
+                            .title(firstTitle(v.getTitleInCentralKurdish(), v.getOriginalTitle(),
+                                    v.getAlternativeTitle(), v.getRomanizedTitle(), code))
                             .thumbnail(null)
                             .projectCode(p == null ? null : p.getProjectCode())
                             .projectName(p == null ? null : p.getProjectName())
@@ -261,8 +261,8 @@ public class GuestTrendingService {
                     Project p = t.getProject();
                     return GuestTrendingDTO.TrendingItem.builder()
                             .rank(rank).score(score).kind("text").code(code)
-                            .title(firstTitle(t.getOriginalTitle(), t.getAlternativeTitle(),
-                                    t.getTitleInCentralKurdish(), t.getRomanizedTitle(), code))
+                            .title(firstTitle(t.getTitleInCentralKurdish(), t.getOriginalTitle(),
+                                    t.getAlternativeTitle(), t.getRomanizedTitle(), code))
                             .thumbnail(null)
                             .projectCode(p == null ? null : p.getProjectCode())
                             .projectName(p == null ? null : p.getProjectName())
@@ -281,8 +281,8 @@ public class GuestTrendingService {
                     Project p = i.getProject();
                     return GuestTrendingDTO.TrendingItem.builder()
                             .rank(rank).score(score).kind("image").code(code)
-                            .title(firstTitle(i.getOriginalTitle(), i.getAlternativeTitle(),
-                                    i.getTitleInCentralKurdish(), i.getRomanizedTitle(), code))
+                            .title(firstTitle(i.getTitleInCentralKurdish(), i.getOriginalTitle(),
+                                    i.getAlternativeTitle(), i.getRomanizedTitle(), code))
                             .thumbnail(null)
                             .projectCode(p == null ? null : p.getProjectCode())
                             .projectName(p == null ? null : p.getProjectName())

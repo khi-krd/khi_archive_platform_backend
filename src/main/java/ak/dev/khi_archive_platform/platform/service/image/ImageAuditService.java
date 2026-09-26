@@ -46,7 +46,7 @@ public class ImageAuditService {
         ImageAuditLog.ImageAuditLogBuilder builder = ImageAuditLog.builder()
                 .imageId(image != null ? image.getId() : null)
                 .imageCode(image != null ? image.getImageCode() : null)
-                .imageTitle(image != null ? image.getOriginalTitle() : null)
+                .imageTitle(image != null ? auditTitle(image) : null)
                 .action(action)
                 .actorUserId(actorUser != null ? actorUser.getUserId() : null)
                 .actorUsername(actorUser != null ? actorUser.getUsername() : (authentication != null ? authentication.getName() : "anonymous"))
@@ -135,5 +135,23 @@ public class ImageAuditService {
                 .filter(authority -> authority != null && !authority.isBlank() && !authority.startsWith("ROLE_"))
                 .distinct()
                 .collect(Collectors.joining(","));
+    }
+
+    // Audit rows show the same display title as the rest of the platform —
+    // Central Kurdish first, then the secondary titles, then the code.
+    // The upload fileName is never a title.
+    private static String auditTitle(Image image) {
+        for (String candidate : new String[]{
+                image.getTitleInCentralKurdish(),
+                image.getOriginalTitle(),
+                image.getAlternativeTitle(),
+                image.getRomanizedTitle(),
+                image.getImageCode(),
+        }) {
+            if (candidate != null && !candidate.isBlank()) {
+                return candidate;
+            }
+        }
+        return null;
     }
 }

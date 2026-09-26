@@ -46,7 +46,7 @@ public class VideoAuditService {
         VideoAuditLog.VideoAuditLogBuilder builder = VideoAuditLog.builder()
                 .videoId(video != null ? video.getId() : null)
                 .videoCode(video != null ? video.getVideoCode() : null)
-                .videoTitle(video != null ? video.getOriginalTitle() : null)
+                .videoTitle(video != null ? auditTitle(video) : null)
                 .action(action)
                 .actorUserId(actorUser != null ? actorUser.getUserId() : null)
                 .actorUsername(actorUser != null ? actorUser.getUsername() : (authentication != null ? authentication.getName() : "anonymous"))
@@ -135,5 +135,23 @@ public class VideoAuditService {
                 .filter(authority -> authority != null && !authority.isBlank() && !authority.startsWith("ROLE_"))
                 .distinct()
                 .collect(Collectors.joining(","));
+    }
+
+    // Audit rows show the same display title as the rest of the platform —
+    // Central Kurdish first, then the secondary titles, then the code.
+    // The upload fileName is never a title.
+    private static String auditTitle(Video video) {
+        for (String candidate : new String[]{
+                video.getTitleInCentralKurdish(),
+                video.getOriginalTitle(),
+                video.getAlternativeTitle(),
+                video.getRomanizedTitle(),
+                video.getVideoCode(),
+        }) {
+            if (candidate != null && !candidate.isBlank()) {
+                return candidate;
+            }
+        }
+        return null;
     }
 }

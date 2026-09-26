@@ -46,7 +46,7 @@ public class TextAuditService {
         TextAuditLog.TextAuditLogBuilder builder = TextAuditLog.builder()
                 .textId(text != null ? text.getId() : null)
                 .textCode(text != null ? text.getTextCode() : null)
-                .textTitle(text != null ? text.getOriginalTitle() : null)
+                .textTitle(text != null ? auditTitle(text) : null)
                 .action(action)
                 .actorUserId(actorUser != null ? actorUser.getUserId() : null)
                 .actorUsername(actorUser != null ? actorUser.getUsername() : (authentication != null ? authentication.getName() : "anonymous"))
@@ -135,5 +135,23 @@ public class TextAuditService {
                 .filter(authority -> authority != null && !authority.isBlank() && !authority.startsWith("ROLE_"))
                 .distinct()
                 .collect(Collectors.joining(","));
+    }
+
+    // Audit rows show the same display title as the rest of the platform —
+    // Central Kurdish first, then the secondary titles, then the code.
+    // The upload fileName is never a title.
+    private static String auditTitle(Text text) {
+        for (String candidate : new String[]{
+                text.getTitleInCentralKurdish(),
+                text.getOriginalTitle(),
+                text.getAlternativeTitle(),
+                text.getRomanizedTitle(),
+                text.getTextCode(),
+        }) {
+            if (candidate != null && !candidate.isBlank()) {
+                return candidate;
+            }
+        }
+        return null;
     }
 }

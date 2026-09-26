@@ -278,9 +278,9 @@ public class ItemsService {
                 .type(ItemType.AUDIO)
                 .id(a.getId())
                 .code(a.getAudioCode())
-                .title(firstNonBlank(a.getOriginTitle(), a.getAlterTitle(),
-                        a.getCentralKurdishTitle(), a.getRomanizedTitle(),
-                        a.getFileName(), a.getAudioCode()))
+                .title(firstNonBlank(a.getCentralKurdishTitle(), a.getOriginTitle(),
+                        a.getAlterTitle(), a.getRomanizedTitle(),
+                        a.getAudioCode()))
                 .projectId(a.getProjectId())
                 .projectCode(a.getProjectCode())
                 .projectName(a.getProjectName())
@@ -312,9 +312,9 @@ public class ItemsService {
                 .type(ItemType.VIDEO)
                 .id(v.getId())
                 .code(v.getVideoCode())
-                .title(firstNonBlank(v.getOriginalTitle(), v.getAlternativeTitle(),
-                        v.getTitleInCentralKurdish(), v.getRomanizedTitle(),
-                        v.getFileName(), v.getVideoCode()))
+                .title(firstNonBlank(v.getTitleInCentralKurdish(), v.getOriginalTitle(),
+                        v.getAlternativeTitle(), v.getRomanizedTitle(),
+                        v.getVideoCode()))
                 .projectId(v.getProjectId())
                 .projectCode(v.getProjectCode())
                 .projectName(v.getProjectName())
@@ -346,9 +346,9 @@ public class ItemsService {
                 .type(ItemType.IMAGE)
                 .id(i.getId())
                 .code(i.getImageCode())
-                .title(firstNonBlank(i.getOriginalTitle(), i.getAlternativeTitle(),
-                        i.getTitleInCentralKurdish(), i.getRomanizedTitle(),
-                        i.getFileName(), i.getImageCode()))
+                .title(firstNonBlank(i.getTitleInCentralKurdish(), i.getOriginalTitle(),
+                        i.getAlternativeTitle(), i.getRomanizedTitle(),
+                        i.getImageCode()))
                 .projectId(i.getProjectId())
                 .projectCode(i.getProjectCode())
                 .projectName(i.getProjectName())
@@ -379,9 +379,9 @@ public class ItemsService {
                 .type(ItemType.TEXT)
                 .id(t.getId())
                 .code(t.getTextCode())
-                .title(firstNonBlank(t.getOriginalTitle(), t.getAlternativeTitle(),
-                        t.getTitleInCentralKurdish(), t.getRomanizedTitle(),
-                        t.getFileName(), t.getTextCode()))
+                .title(firstNonBlank(t.getTitleInCentralKurdish(), t.getOriginalTitle(),
+                        t.getAlternativeTitle(), t.getRomanizedTitle(),
+                        t.getTextCode()))
                 .projectId(t.getProjectId())
                 .projectCode(t.getProjectCode())
                 .projectName(t.getProjectName())
