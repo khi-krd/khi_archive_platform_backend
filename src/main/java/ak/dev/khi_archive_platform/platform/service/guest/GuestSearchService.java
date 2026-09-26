@@ -198,9 +198,8 @@ public class GuestSearchService {
             filtered.add(p);
         }
 
-        Comparator<Project> cmp = projectComparator(sortBy);
+        Comparator<Project> cmp = projectComparator(sortBy, "desc".equalsIgnoreCase(sortDirection));
         if (cmp != null) {
-            if ("desc".equalsIgnoreCase(sortDirection)) cmp = cmp.reversed();
             filtered.sort(cmp);
         }
 
@@ -450,9 +449,8 @@ public class GuestSearchService {
             filtered.add(a);
         }
 
-        Comparator<Audio> cmp = audioComparator(sortBy);
+        Comparator<Audio> cmp = audioComparator(sortBy, "desc".equalsIgnoreCase(sortDirection));
         if (cmp != null) {
-            if ("desc".equalsIgnoreCase(sortDirection)) cmp = cmp.reversed();
             filtered.sort(cmp);
         }
 
@@ -567,9 +565,8 @@ public class GuestSearchService {
             filtered.add(v);
         }
 
-        Comparator<Video> cmp = videoComparator(sortBy);
+        Comparator<Video> cmp = videoComparator(sortBy, "desc".equalsIgnoreCase(sortDirection));
         if (cmp != null) {
-            if ("desc".equalsIgnoreCase(sortDirection)) cmp = cmp.reversed();
             filtered.sort(cmp);
         }
 
@@ -684,9 +681,8 @@ public class GuestSearchService {
             filtered.add(t);
         }
 
-        Comparator<Text> cmp = textComparator(sortBy);
+        Comparator<Text> cmp = textComparator(sortBy, "desc".equalsIgnoreCase(sortDirection));
         if (cmp != null) {
-            if ("desc".equalsIgnoreCase(sortDirection)) cmp = cmp.reversed();
             filtered.sort(cmp);
         }
 
@@ -795,9 +791,8 @@ public class GuestSearchService {
             filtered.add(i);
         }
 
-        Comparator<Image> cmp = imageComparator(sortBy);
+        Comparator<Image> cmp = imageComparator(sortBy, "desc".equalsIgnoreCase(sortDirection));
         if (cmp != null) {
-            if ("desc".equalsIgnoreCase(sortDirection)) cmp = cmp.reversed();
             filtered.sort(cmp);
         }
 
@@ -1467,85 +1462,100 @@ public class GuestSearchService {
 
     // ─── Sort comparators ─────────────────────────────────────────────────────────
 
-    private static Comparator<Project> projectComparator(String sortBy) {
+    /**
+     * Builds a comparator that keeps NULL values LAST in both directions.
+     * The old {@code comparator.reversed()} flipped the null placement along
+     * with the values, so a descending sort (e.g. "newest" on a publish date)
+     * surfaced every undated/untitled row at the TOP. Direction is baked into
+     * the value-order here instead, so empties always trail.
+     */
+    private static <T, C extends Comparable<? super C>> Comparator<T> comparingNullsLast(
+            java.util.function.Function<? super T, ? extends C> getter,
+            Comparator<? super C> order,
+            boolean desc) {
+        Comparator<? super C> directed = desc ? order.reversed() : order;
+        return Comparator.comparing(getter, Comparator.nullsLast(directed));
+    }
+
+    private static Comparator<Project> projectComparator(String sortBy, boolean desc) {
         if (sortBy == null || sortBy.isBlank()) return null;
         return switch (sortBy.toLowerCase(Locale.ROOT)) {
             case "name", "alpha", "alphabet", "alphabetical", "projectname" ->
-                    Comparator.comparing(Project::getProjectName, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
+                    comparingNullsLast(Project::getProjectName, String.CASE_INSENSITIVE_ORDER, desc);
             case "code", "projectcode" ->
-                    Comparator.comparing(Project::getProjectCode, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
+                    comparingNullsLast(Project::getProjectCode, String.CASE_INSENSITIVE_ORDER, desc);
             case "createdat", "created", "added" ->
-                    Comparator.comparing(Project::getCreatedAt, Comparator.nullsLast(Instant::compareTo));
+                    comparingNullsLast(Project::getCreatedAt, Instant::compareTo, desc);
             case "updatedat", "updated", "modified" ->
-                    Comparator.comparing(Project::getUpdatedAt, Comparator.nullsLast(Instant::compareTo));
+                    comparingNullsLast(Project::getUpdatedAt, Instant::compareTo, desc);
             default -> null;
         };
     }
 
-    private static Comparator<Audio> audioComparator(String sortBy) {
+    private static Comparator<Audio> audioComparator(String sortBy, boolean desc) {
         if (sortBy == null || sortBy.isBlank()) return null;
         return switch (sortBy.toLowerCase(Locale.ROOT)) {
             case "title", "name", "alpha", "alphabet", "origintitle" ->
-                    Comparator.comparing(Audio::getOriginTitle, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
+                    comparingNullsLast(Audio::getOriginTitle, String.CASE_INSENSITIVE_ORDER, desc);
             case "code", "audiocode" ->
-                    Comparator.comparing(Audio::getAudioCode, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
+                    comparingNullsLast(Audio::getAudioCode, String.CASE_INSENSITIVE_ORDER, desc);
             case "date", "datecreated" ->
-                    Comparator.comparing(Audio::getDate_created, Comparator.nullsLast(Instant::compareTo));
+                    comparingNullsLast(Audio::getDate_created, Instant::compareTo, desc);
             case "published", "datepublished" ->
-                    Comparator.comparing(Audio::getDate_published, Comparator.nullsLast(Instant::compareTo));
+                    comparingNullsLast(Audio::getDate_published, Instant::compareTo, desc);
             case "createdat", "created", "added" ->
-                    Comparator.comparing(Audio::getCreatedAt, Comparator.nullsLast(Instant::compareTo));
+                    comparingNullsLast(Audio::getCreatedAt, Instant::compareTo, desc);
             default -> null;
         };
     }
 
-    private static Comparator<Video> videoComparator(String sortBy) {
+    private static Comparator<Video> videoComparator(String sortBy, boolean desc) {
         if (sortBy == null || sortBy.isBlank()) return null;
         return switch (sortBy.toLowerCase(Locale.ROOT)) {
             case "title", "name", "alpha", "alphabet", "originaltitle" ->
-                    Comparator.comparing(Video::getOriginalTitle, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
+                    comparingNullsLast(Video::getOriginalTitle, String.CASE_INSENSITIVE_ORDER, desc);
             case "code", "videocode" ->
-                    Comparator.comparing(Video::getVideoCode, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
+                    comparingNullsLast(Video::getVideoCode, String.CASE_INSENSITIVE_ORDER, desc);
             case "date", "datecreated" ->
-                    Comparator.comparing(Video::getDateCreated, Comparator.nullsLast(Instant::compareTo));
+                    comparingNullsLast(Video::getDateCreated, Instant::compareTo, desc);
             case "published", "datepublished" ->
-                    Comparator.comparing(Video::getDatePublished, Comparator.nullsLast(Instant::compareTo));
+                    comparingNullsLast(Video::getDatePublished, Instant::compareTo, desc);
             case "createdat", "created", "added" ->
-                    Comparator.comparing(Video::getCreatedAt, Comparator.nullsLast(Instant::compareTo));
+                    comparingNullsLast(Video::getCreatedAt, Instant::compareTo, desc);
             default -> null;
         };
     }
 
-    private static Comparator<Text> textComparator(String sortBy) {
+    private static Comparator<Text> textComparator(String sortBy, boolean desc) {
         if (sortBy == null || sortBy.isBlank()) return null;
         return switch (sortBy.toLowerCase(Locale.ROOT)) {
             case "title", "name", "alpha", "alphabet", "originaltitle" ->
-                    Comparator.comparing(Text::getOriginalTitle, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
+                    comparingNullsLast(Text::getOriginalTitle, String.CASE_INSENSITIVE_ORDER, desc);
             case "code", "textcode" ->
-                    Comparator.comparing(Text::getTextCode, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
+                    comparingNullsLast(Text::getTextCode, String.CASE_INSENSITIVE_ORDER, desc);
             case "date", "datecreated" ->
-                    Comparator.comparing(Text::getDateCreated, Comparator.nullsLast(Instant::compareTo));
+                    comparingNullsLast(Text::getDateCreated, Instant::compareTo, desc);
             case "published", "datepublished" ->
-                    Comparator.comparing(Text::getDatePublished, Comparator.nullsLast(Instant::compareTo));
+                    comparingNullsLast(Text::getDatePublished, Instant::compareTo, desc);
             case "createdat", "created", "added" ->
-                    Comparator.comparing(Text::getCreatedAt, Comparator.nullsLast(Instant::compareTo));
+                    comparingNullsLast(Text::getCreatedAt, Instant::compareTo, desc);
             default -> null;
         };
     }
 
-    private static Comparator<Image> imageComparator(String sortBy) {
+    private static Comparator<Image> imageComparator(String sortBy, boolean desc) {
         if (sortBy == null || sortBy.isBlank()) return null;
         return switch (sortBy.toLowerCase(Locale.ROOT)) {
             case "title", "name", "alpha", "alphabet", "originaltitle" ->
-                    Comparator.comparing(Image::getOriginalTitle, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
+                    comparingNullsLast(Image::getOriginalTitle, String.CASE_INSENSITIVE_ORDER, desc);
             case "code", "imagecode" ->
-                    Comparator.comparing(Image::getImageCode, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
+                    comparingNullsLast(Image::getImageCode, String.CASE_INSENSITIVE_ORDER, desc);
             case "date", "datecreated" ->
-                    Comparator.comparing(Image::getDateCreated, Comparator.nullsLast(Instant::compareTo));
+                    comparingNullsLast(Image::getDateCreated, Instant::compareTo, desc);
             case "published", "datepublished" ->
-                    Comparator.comparing(Image::getDatePublished, Comparator.nullsLast(Instant::compareTo));
+                    comparingNullsLast(Image::getDatePublished, Instant::compareTo, desc);
             case "createdat", "created", "added" ->
-                    Comparator.comparing(Image::getCreatedAt, Comparator.nullsLast(Instant::compareTo));
+                    comparingNullsLast(Image::getCreatedAt, Instant::compareTo, desc);
             default -> null;
         };
     }
