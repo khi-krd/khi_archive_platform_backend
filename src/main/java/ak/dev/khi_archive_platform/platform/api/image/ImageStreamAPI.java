@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.S3Exception;
@@ -58,7 +59,7 @@ public class ImageStreamAPI {
     // ── Public guest endpoint ─────────────────────────────────────────────────
 
     @GetMapping("/api/guest/image/{imageCode}/view")
-    public ResponseEntity<byte[]> viewPublic(
+    public ResponseEntity<StreamingResponseBody> viewPublic(
             @PathVariable String imageCode,
             @RequestHeader(value = HttpHeaders.IF_NONE_MATCH, required = false) String ifNoneMatch) {
 
@@ -71,7 +72,7 @@ public class ImageStreamAPI {
     // ── Authenticated admin/user endpoint ─────────────────────────────────────
 
     @GetMapping("/api/image/{imageCode}/view")
-    public ResponseEntity<byte[]> viewAuthenticated(
+    public ResponseEntity<StreamingResponseBody> viewAuthenticated(
             @PathVariable String imageCode,
             @RequestHeader(value = HttpHeaders.IF_NONE_MATCH, required = false) String ifNoneMatch) {
 
@@ -83,7 +84,14 @@ public class ImageStreamAPI {
 
     // ── Shared serving logic ──────────────────────────────────────────────────
 
-    private ResponseEntity<byte[]> buildViewResponse(Image image, String ifNoneMatch, boolean isPublic) {
+    /**
+     * Streams the S3 object straight to the client — headers go out as soon as
+     * the stream opens and bytes flow chunk-by-chunk, so the browser shows the
+     * image progressively and large files never buffer fully in memory
+     * (a {@code readAllBytes()} approach delayed time-to-first-byte by the
+     * whole download and timed out on multi-MB photos).
+     */
+    private ResponseEntity<StreamingResponseBody> buildViewResponse(Image image, String ifNoneMatch, boolean isPublic) {
         String fileUrl = image.getImageFileUrl();
         if (fileUrl == null || fileUrl.isBlank()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Image file not available");
@@ -103,7 +111,16 @@ public class ImageStreamAPI {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Image file not available");
         }
 
-        byte[] bytes = downloadFull(key, image.getImageCode());
+        // Open eagerly: a missing/corrupt object fails here (proper status) instead
+        // of mid-body, and the S3 metadata gives an accurate Content-Length.
+        ResponseInputStream<GetObjectResponse> stream;
+        try {
+            stream = s3Service.openStream(key);
+        } catch (UserStorageException e) {
+            throw mapStorageError(e, "Image not available for " + image.getImageCode());
+        }
+        Long contentLength = stream.response() != null ? stream.response().contentLength() : null;
+
         MediaType contentType = resolveContentType(fileUrl);
 
         HttpHeaders headers = new HttpHeaders();
@@ -116,20 +133,19 @@ public class ImageStreamAPI {
         // Admin: never cache, may preview soft-deleted records.
         headers.setCacheControl(isPublic ? "public, max-age=3600" : "no-store, private");
         headers.set("X-Content-Type-Options", "nosniff");
-        headers.setContentLength(bytes.length);
-
-        return new ResponseEntity<>(bytes, headers, HttpStatus.OK);
-    }
-
-    private byte[] downloadFull(String key, String imageCode) {
-        try (ResponseInputStream<GetObjectResponse> stream = s3Service.openStream(key)) {
-            return stream.readAllBytes();
-        } catch (IOException e) {
-            log.error("Failed to read image for key={}", key, e);
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to serve image");
-        } catch (UserStorageException e) {
-            throw mapStorageError(e, "Image not available for " + imageCode);
+        if (contentLength != null) {
+            headers.setContentLength(contentLength);
         }
+
+        StreamingResponseBody body = out -> {
+            try (ResponseInputStream<GetObjectResponse> in = stream) {
+                in.transferTo(out);
+            } catch (IOException e) {
+                log.debug("Image stream interrupted for key={}: {}", key, e.getMessage());
+            }
+        };
+
+        return ResponseEntity.ok().headers(headers).body(body);
     }
 
     /**
