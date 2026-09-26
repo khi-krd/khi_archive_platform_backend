@@ -122,7 +122,9 @@ final class GuestMediaHitMapper {
                 .dateCreated(v.getDateCreated())
                 .datePublished(v.getDatePublished())
                 .mediaUrl(v.getVideoFileUrl())
-                .thumbnailUrl(blankToNull(v.getPersonMediaPortrait()))
+                // A video's thumbnail is its own first frame — the card
+                // frame-grabs mediaUrl client-side. A person portrait would
+                // outrank it and show a face instead of the footage.
                 .detailUrl(detailUrl(TYPE_VIDEO, v.getVideoCode()))
                 .isTrending(v.isTrending())
                 .trendingRank(v.getTrendingRank())
