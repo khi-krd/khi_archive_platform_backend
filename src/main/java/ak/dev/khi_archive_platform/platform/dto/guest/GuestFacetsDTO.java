@@ -23,6 +23,10 @@ public class GuestFacetsDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private MediaTypeBucket mediaTypes;
+    /** Oldest year among media {@code datePublished} values — drives the timeline slider. */
+    private Integer minYear;
+    /** Newest year among media {@code datePublished} values. */
+    private Integer maxYear;
     private List<Bucket> categories;
     private List<Bucket> persons;
     private List<Bucket> languages;

@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -47,6 +48,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -1125,6 +1127,14 @@ public class GuestSearchService {
             bumpLabel(regions, p.getRegion());
         }
 
+        // Publish-year span across every visible media record — the slider bounds
+        // must track datePublished, never the record's createdAt upload stamp.
+        int[] span = {Integer.MAX_VALUE, Integer.MIN_VALUE};
+        accPublishedYear(audios, Audio::getDate_published, span);
+        accPublishedYear(videos, Video::getDatePublished, span);
+        accPublishedYear(texts, Text::getDatePublished, span);
+        accPublishedYear(images, Image::getDatePublished, span);
+
         return GuestFacetsDTO.builder()
                 .mediaTypes(GuestFacetsDTO.MediaTypeBucket.builder()
                         .audios(audios.size())
@@ -1133,6 +1143,8 @@ public class GuestSearchService {
                         .images(images.size())
                         .projects(projects.size())
                         .build())
+                .minYear(span[0] == Integer.MAX_VALUE ? null : span[0])
+                .maxYear(span[1] == Integer.MIN_VALUE ? null : span[1])
                 .languages(toBuckets(languages))
                 .dialects(toBuckets(dialects))
                 .regions(toBuckets(regions))
@@ -1142,6 +1154,17 @@ public class GuestSearchService {
                 .categories(rankBuckets(categoryBuckets.values()))
                 .persons(rankBuckets(personBuckets.values()))
                 .build();
+    }
+
+    /** Accumulates the min/max publish year from a media collection into {@code span}. */
+    private static <T> void accPublishedYear(Collection<T> items, Function<T, Instant> published, int[] span) {
+        for (T item : items) {
+            Instant instant = published.apply(item);
+            if (instant == null) continue;
+            int year = instant.atOffset(ZoneOffset.UTC).getYear();
+            if (year < span[0]) span[0] = year;
+            if (year > span[1]) span[1] = year;
+        }
     }
 
     // ─── Scope expansion (q → matching projects/persons → their media) ────────────
