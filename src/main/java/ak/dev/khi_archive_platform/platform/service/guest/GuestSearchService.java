@@ -447,7 +447,7 @@ public class GuestSearchService {
             if (!wTags.isEmpty() && !anyMatch(a.getTags(), wTags)) continue;
             if (!wKeywords.isEmpty() && !anyMatch(a.getKeywords(), wKeywords)) continue;
             if (!withinRange(a.getDate_created(), dateFrom, dateTo)) continue;
-            if (!withinRange(a.getDate_published(), publishedFrom, publishedTo)) continue;
+            if (!withinRange(workDate(a), publishedFrom, publishedTo)) continue;
             filtered.add(a);
         }
 
@@ -563,7 +563,7 @@ public class GuestSearchService {
             if (!wTags.isEmpty() && !anyMatch(v.getTags(), wTags)) continue;
             if (!wKeywords.isEmpty() && !anyMatch(v.getKeywords(), wKeywords)) continue;
             if (!withinRange(v.getDateCreated(), dateFrom, dateTo)) continue;
-            if (!withinRange(v.getDatePublished(), publishedFrom, publishedTo)) continue;
+            if (!withinRange(workDate(v), publishedFrom, publishedTo)) continue;
             filtered.add(v);
         }
 
@@ -678,7 +678,7 @@ public class GuestSearchService {
             if (!wTags.isEmpty() && !anyMatch(t.getTags(), wTags)) continue;
             if (!wKeywords.isEmpty() && !anyMatch(t.getKeywords(), wKeywords)) continue;
             if (!withinRange(t.getDateCreated(), dateFrom, dateTo)) continue;
-            if (!withinRange(t.getDatePublished(), publishedFrom, publishedTo)) continue;
+            if (!withinRange(workDate(t), publishedFrom, publishedTo)) continue;
             if (!withinRange(t.getPrintDate(), printDateFrom, printDateTo)) continue;
             filtered.add(t);
         }
@@ -789,7 +789,7 @@ public class GuestSearchService {
             if (!wTags.isEmpty() && !anyMatch(i.getTags(), wTags)) continue;
             if (!wKeywords.isEmpty() && !anyMatch(i.getKeywords(), wKeywords)) continue;
             if (!withinRange(i.getDateCreated(), dateFrom, dateTo)) continue;
-            if (!withinRange(i.getDatePublished(), publishedFrom, publishedTo)) continue;
+            if (!withinRange(workDate(i), publishedFrom, publishedTo)) continue;
             filtered.add(i);
         }
 
@@ -1130,10 +1130,10 @@ public class GuestSearchService {
         // Publish-year span across every visible media record — the slider bounds
         // must track datePublished, never the record's createdAt upload stamp.
         int[] span = {Integer.MAX_VALUE, Integer.MIN_VALUE};
-        accPublishedYear(audios, Audio::getDate_published, span);
-        accPublishedYear(videos, Video::getDatePublished, span);
-        accPublishedYear(texts, Text::getDatePublished, span);
-        accPublishedYear(images, Image::getDatePublished, span);
+        accPublishedYear(audios, GuestSearchService::workDate, span);
+        accPublishedYear(videos, GuestSearchService::workDate, span);
+        accPublishedYear(texts, GuestSearchService::workDate, span);
+        accPublishedYear(images, GuestSearchService::workDate, span);
 
         return GuestFacetsDTO.builder()
                 .mediaTypes(GuestFacetsDTO.MediaTypeBucket.builder()
@@ -1154,6 +1154,36 @@ public class GuestSearchService {
                 .categories(rankBuckets(categoryBuckets.values()))
                 .persons(rankBuckets(personBuckets.values()))
                 .build();
+    }
+
+    /** First non-null instant of the candidates — the content-date chain. */
+    private static Instant coalesce(Instant... candidates) {
+        for (Instant c : candidates) if (c != null) return c;
+        return null;
+    }
+
+    /**
+     * The work's own date as the public catalogue presents it: content creation
+     * date first (e.g. a 1995 photograph), publish date next (e.g. a 2003 book),
+     * print date for texts, and the record stamp only as a last resort. Guest
+     * sorts, range filters and timeline bounds all key on this so what a visitor
+     * sees on a card is exactly what ordering and the timeline operate on —
+     * never the row's createdAt upload time alone.
+     */
+    private static Instant workDate(Audio a) {
+        return coalesce(a.getDate_created(), a.getDate_published(), a.getCreatedAt());
+    }
+
+    private static Instant workDate(Video v) {
+        return coalesce(v.getDateCreated(), v.getDatePublished(), v.getCreatedAt());
+    }
+
+    private static Instant workDate(Text t) {
+        return coalesce(t.getDateCreated(), t.getDatePublished(), t.getPrintDate(), t.getCreatedAt());
+    }
+
+    private static Instant workDate(Image i) {
+        return coalesce(i.getDateCreated(), i.getDatePublished(), i.getCreatedAt());
     }
 
     /** Accumulates the min/max publish year from a media collection into {@code span}. */
@@ -1525,7 +1555,7 @@ public class GuestSearchService {
             case "date", "datecreated" ->
                     comparingNullsLast(Audio::getDate_created, Instant::compareTo, desc);
             case "published", "datepublished" ->
-                    comparingNullsLast(Audio::getDate_published, Instant::compareTo, desc);
+                    comparingNullsLast(GuestSearchService::workDate, Instant::compareTo, desc);
             case "createdat", "created", "added" ->
                     comparingNullsLast(Audio::getCreatedAt, Instant::compareTo, desc);
             default -> null;
@@ -1542,7 +1572,7 @@ public class GuestSearchService {
             case "date", "datecreated" ->
                     comparingNullsLast(Video::getDateCreated, Instant::compareTo, desc);
             case "published", "datepublished" ->
-                    comparingNullsLast(Video::getDatePublished, Instant::compareTo, desc);
+                    comparingNullsLast(GuestSearchService::workDate, Instant::compareTo, desc);
             case "createdat", "created", "added" ->
                     comparingNullsLast(Video::getCreatedAt, Instant::compareTo, desc);
             default -> null;
@@ -1559,7 +1589,7 @@ public class GuestSearchService {
             case "date", "datecreated" ->
                     comparingNullsLast(Text::getDateCreated, Instant::compareTo, desc);
             case "published", "datepublished" ->
-                    comparingNullsLast(Text::getDatePublished, Instant::compareTo, desc);
+                    comparingNullsLast(GuestSearchService::workDate, Instant::compareTo, desc);
             case "createdat", "created", "added" ->
                     comparingNullsLast(Text::getCreatedAt, Instant::compareTo, desc);
             default -> null;
@@ -1576,7 +1606,7 @@ public class GuestSearchService {
             case "date", "datecreated" ->
                     comparingNullsLast(Image::getDateCreated, Instant::compareTo, desc);
             case "published", "datepublished" ->
-                    comparingNullsLast(Image::getDatePublished, Instant::compareTo, desc);
+                    comparingNullsLast(GuestSearchService::workDate, Instant::compareTo, desc);
             case "createdat", "created", "added" ->
                     comparingNullsLast(Image::getCreatedAt, Instant::compareTo, desc);
             default -> null;
