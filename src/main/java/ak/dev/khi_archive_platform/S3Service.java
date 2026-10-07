@@ -53,6 +53,9 @@ public class S3Service {
     @Value("${aws.s3.person-folder:persons}")
     private String personFolder;
 
+    @Value("${aws.s3.public-url:}")
+    private String publicUrlBase;
+
     private static final String DEFAULT_FOLDER = "files";
     private static final String PROFILE_FOLDER = "user_profile_images";
     private static final int MULTIPART_PART_SIZE = 16 * 1024 * 1024;
@@ -403,11 +406,19 @@ public class S3Service {
     }
 
     public String getPublicUrl(String key) {
+        if (publicUrlBase != null && !publicUrlBase.isBlank()) {
+            return publicUrlBase.replaceAll("/+$", "") + "/" + key;
+        }
         return "https://" + bucket + ".s3." + region + ".amazonaws.com/" + key;
     }
 
     public boolean isOurS3Url(String url) {
-        return url != null && url.contains(bucket) && url.contains(".s3.");
+        if (url == null) return false;
+        if (publicUrlBase != null && !publicUrlBase.isBlank()
+                && url.startsWith(publicUrlBase.replaceAll("/+$", ""))) {
+            return true;
+        }
+        return url.contains(bucket) && url.contains(".s3.");
     }
 
     private String buildKey(String folder, String originalFilename) {

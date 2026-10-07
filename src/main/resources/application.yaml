@@ -114,9 +114,11 @@ aws:
     secret-key: ${AWS_SECRET_ACCESS_KEY}
   s3:
     region: ${AWS_REGION:us-east-1}
-    bucket: ${AWS_S3_BUCKET:khi-archive-platform}
+    bucket: ${AWS_S3_BUCKET:khi-bucket}
     base-folder: ${AWS_S3_BASE_FOLDER:khi-archive-platform-folders}
     person-folder: ${AWS_S3_PERSON_FOLDER:persons}
+    endpoint: ${AWS_S3_ENDPOINT:}
+    public-url: ${AWS_S3_PUBLIC_URL:}
 # ===============================
 # SERVER / TOMCAT LIMITS
 # ===============================
