@@ -169,7 +169,17 @@ public enum Permission {
     SITE_FONT_READ("site_font:read"),
     SITE_FONT_CREATE("site_font:create"),
     SITE_FONT_UPDATE("site_font:update"),
-    SITE_FONT_DELETE("site_font:delete");
+    SITE_FONT_DELETE("site_font:delete"),
+
+    // ── Static Text Blocks (admin-editable UI strings) ─────────────────
+    // Editable "static text" rows keyed by message key + locale — the public
+    // catalogue reads the merged map through /api/guest/text-blocks while
+    // admins manage rows under /api/text-blocks. Not seeded into
+    // EMPLOYEE_DEFAULT_PERMISSIONS: only ADMIN edits interface text.
+    STATIC_TEXT_READ("static_text:read"),
+    STATIC_TEXT_CREATE("static_text:create"),
+    STATIC_TEXT_UPDATE("static_text:update"),
+    STATIC_TEXT_DELETE("static_text:delete");
 
     private final String permission;
 }
