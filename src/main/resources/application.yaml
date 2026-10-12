@@ -70,9 +70,9 @@ spring:
   servlet:
     multipart:
       enabled: true
-      max-file-size: 5GB
-      # A 5 GB file plus the JSON part and multipart boundaries must fit.
-      max-request-size: 6GB
+      max-file-size: 10GB
+      # A 10 GB file plus the JSON part and multipart boundaries must fit.
+      max-request-size: 11GB
       file-size-threshold: 2MB
   # ===============================
   # CAFFEINE IN-MEMORY CACHE
