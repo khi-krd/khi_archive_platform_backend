@@ -125,7 +125,7 @@ public class PhysicalMediaAPI {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('physical_media:create')")
     public ResponseEntity<PhysicalMediaResponseDTO> create(
-            @Valid @RequestBody PhysicalMediaCreateRequestDTO dto,
+            @Valid @RequestBody(required = false) PhysicalMediaCreateRequestDTO dto,
             Authentication auth,
             HttpServletRequest request) {
         return ResponseEntity.ok(service.create(dto, auth, request));
@@ -135,7 +135,7 @@ public class PhysicalMediaAPI {
     @PreAuthorize("hasAuthority('physical_media:update')")
     public ResponseEntity<PhysicalMediaResponseDTO> update(
             @PathVariable String pmCode,
-            @Valid @RequestBody PhysicalMediaUpdateRequestDTO dto,
+            @Valid @RequestBody(required = false) PhysicalMediaUpdateRequestDTO dto,
             Authentication auth,
             HttpServletRequest request) {
         return ResponseEntity.ok(service.update(pmCode, dto, auth, request));

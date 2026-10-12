@@ -25,21 +25,16 @@ public class PhysicalMediaUpdateRequestDTO {
 
     private Integer inventoryNumber;
 
-    @Size(max = 200)
     private String physicalMediaType;
 
-    @Size(max = 200)
     private String mediaCategory;
 
     private String title;
 
-    @Size(max = 200)
     private String sizeGB;
 
-    @Size(max = 200)
     private String physicalLabel;
 
-    @Size(max = 200)
     private String physicalSize;
 
     private String content;
@@ -62,16 +57,12 @@ public class PhysicalMediaUpdateRequestDTO {
 
     private String trackName;
 
-    @Size(max = 50)
     private String extension;
 
-    @Size(max = 100)
     private String bitOrColorDepth;
 
-    @Size(max = 100)
     private String sampleOrFrameRate;
 
-    @Size(max = 100)
     private String channelsOrResolution;
 
     private String playbackModel;
@@ -82,7 +73,6 @@ public class PhysicalMediaUpdateRequestDTO {
 
     private String ingestSoftware;
 
-    @Size(max = 200)
     private String formatCodec;
 
     private LocalDate digitizeDate;

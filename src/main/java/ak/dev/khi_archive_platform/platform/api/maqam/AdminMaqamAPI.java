@@ -46,7 +46,7 @@ public class AdminMaqamAPI {
     @PreAuthorize("hasAuthority('maqam:teacher_manage')")
     public ResponseEntity<MaqamResponseDTO> assignTeachers(
             @PathVariable String maqamCode,
-            @Valid @RequestBody MaqamTeacherAssignmentDTO dto,
+            @Valid @RequestBody(required = false) MaqamTeacherAssignmentDTO dto,
             Authentication auth,
             HttpServletRequest request) {
         return ResponseEntity.ok(maqamService.assignTeachers(maqamCode, dto, auth, request));

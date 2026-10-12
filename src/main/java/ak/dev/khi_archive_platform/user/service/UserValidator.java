@@ -83,7 +83,7 @@ public class UserValidator {
 
         String normalized = email.trim().toLowerCase();
 
-        // ── Format check (safety net — DTO @Email may have been bypassed) ────
+        // ── Format check (safety net — DTO may have been bypassed) ────
         if (!EMAIL_PATTERN.matcher(normalized).matches()) {
             throw new IllegalArgumentException(
                     "Email must be a valid address with a domain (e.g. user@example.com).");

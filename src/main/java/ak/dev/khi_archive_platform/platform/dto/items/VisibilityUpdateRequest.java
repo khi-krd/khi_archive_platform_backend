@@ -8,5 +8,5 @@ import jakarta.validation.constraints.NotNull;
  * instead of silently defaulting to {@code false}.
  */
 public record VisibilityUpdateRequest(
-        @NotNull(message = "isPublic is required") Boolean isPublic
+        Boolean isPublic
 ) {}

@@ -22,11 +22,8 @@ public class MaqamVoteRequestDTO {
     /** Free-form maqam classification. The organisation deliberately keeps
      *  this open — teachers may write "Rast", "Bayati Shuri", or a longer
      *  qualifier such as "Husseini with Saba ending". */
-    @NotBlank(message = "maqamType is required")
-    @Size(max = 1000)
     private String maqamType;
 
     /** Optional reasoning / note from the teacher. */
-    @Size(max = 10_000)
     private String teacherNote;
 }

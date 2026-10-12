@@ -40,11 +40,9 @@ public class PhysicalMediaCreateRequestDTO {
     @JsonAlias({"Number", "number"})
     private Integer inventoryNumber;
 
-    @Size(max = 200)
     @JsonAlias({"Physical Media Type"})
     private String physicalMediaType;
 
-    @Size(max = 200)
     @JsonAlias({"جۆری بابەت(Media Category)", "Media Category"})
     private String mediaCategory;
 
@@ -53,16 +51,13 @@ public class PhysicalMediaCreateRequestDTO {
 
     /** Digital file size in gigabytes — free text (e.g. {@code 4.7},
      *  {@code 700 MB}). Repurposed from the retired sub-type column. */
-    @Size(max = 200)
     @JsonAlias({"Size GB", "Size in GB", "Size (GB)", "sizeGb", "size_gb"})
     private String sizeGB;
 
-    @Size(max = 200)
     @JsonAlias({"کۆد (Physical Label)", "Physical Label"})
     private String physicalLabel;
 
     /** Material size of the artefact (e.g. big / medium / normal / small). */
-    @Size(max = 200)
     @JsonAlias({"قەبارە (Physical Size)", "قەبارە (Size)", "Physical Size", "Size"})
     private String physicalSize;
 
@@ -97,19 +92,15 @@ public class PhysicalMediaCreateRequestDTO {
     @JsonAlias({"ناوی تراکەکان Track Name", "Track Name"})
     private String trackName;
 
-    @Size(max = 50)
     @JsonAlias({"Extension"})
     private String extension;
 
-    @Size(max = 100)
     @JsonAlias({"Bit Depth / Color Depth", "Bit Depth"})
     private String bitOrColorDepth;
 
-    @Size(max = 100)
     @JsonAlias({"Sample Rate kHz/Frame Rate fps", "Sample Rate", "Frame Rate"})
     private String sampleOrFrameRate;
 
-    @Size(max = 100)
     @JsonAlias({"Channels/Resolution", "Channels", "Resolution"})
     private String channelsOrResolution;
 
@@ -125,7 +116,6 @@ public class PhysicalMediaCreateRequestDTO {
     @JsonAlias({"Ingest Software"})
     private String ingestSoftware;
 
-    @Size(max = 200)
     @JsonAlias({"Format/Codec", "Format", "Codec"})
     private String formatCodec;
 

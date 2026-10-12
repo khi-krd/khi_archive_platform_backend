@@ -108,7 +108,7 @@ public class AudioAPI {
     @PostMapping(value = "/bulk", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('audio:create')")
     public ResponseEntity<AudioService.BulkCreateResult> createAll(
-            @RequestBody List<AudioBulkCreateRequestDTO> dtos,
+            @RequestBody(required = false) List<AudioBulkCreateRequestDTO> dtos,
             Authentication auth,
             HttpServletRequest request
     ) {
@@ -137,7 +137,7 @@ public class AudioAPI {
     @PreAuthorize("hasAuthority('audio:update')")
     public ResponseEntity<AudioResponseDTO> setVisibility(
             @PathVariable String audioCode,
-            @Valid @RequestBody VisibilityUpdateRequest body,
+            @Valid @RequestBody(required = false) VisibilityUpdateRequest body,
             Authentication auth,
             HttpServletRequest request
     ) {

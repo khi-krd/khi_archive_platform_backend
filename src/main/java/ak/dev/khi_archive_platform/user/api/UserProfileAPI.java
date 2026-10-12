@@ -46,7 +46,7 @@ public class UserProfileAPI {
     @PutMapping("/profile")
     public ResponseEntity<UserResponseDTO> updateProfile(
             Authentication auth,
-            @Valid @RequestBody UpdateProfileRequestDTO dto
+            @Valid @RequestBody(required = false) UpdateProfileRequestDTO dto
     ) {
         return ResponseEntity.ok(
                 userProfileService.updateProfile(auth.getName(), dto)
@@ -57,7 +57,7 @@ public class UserProfileAPI {
     @PutMapping("/password")
     public ResponseEntity<Map<String, String>> changePassword(
             Authentication auth,
-            @Valid @RequestBody ChangePasswordRequestDTO dto
+            @Valid @RequestBody(required = false) ChangePasswordRequestDTO dto
     ) {
         userProfileService.changePassword(auth.getName(), dto);
         return ResponseEntity.ok(Map.of("message", "Password updated successfully"));

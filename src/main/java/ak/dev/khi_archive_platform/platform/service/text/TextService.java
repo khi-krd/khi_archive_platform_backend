@@ -97,21 +97,21 @@ public class TextService {
                                   MultipartFile coverImage,
                                   Authentication authentication,
                                   HttpServletRequest request) {
+        if (dto == null) {
+            dto = new TextCreateRequestDTO();
+        }
         validateCreate(dto, textFile);
 
         Project project = resolveProject(dto.getProjectCode());
 
-        String textVersion = dto.getTextVersion().toUpperCase(Locale.ROOT);
-        Integer versionNumber = dto.getVersionNumber();
-        Integer copyNumber = dto.getCopyNumber();
+        String textVersion = dto.getTextVersion() != null
+                ? dto.getTextVersion().toUpperCase(Locale.ROOT) : "ORIGINAL";
+        Integer versionNumber = dto.getVersionNumber() != null && dto.getVersionNumber() >= 1
+                ? dto.getVersionNumber() : 1;
+        Integer copyNumber = dto.getCopyNumber() != null && dto.getCopyNumber() >= 1
+                ? dto.getCopyNumber() : 1;
         if (!VALID_VERSIONS.contains(textVersion)) {
-            throw new TextValidationException("Text version must be one of: RAW, MASTER, RESTORED, ARCHIVE, ORIGINAL, DIGITIZED, PROFESSIONAL");
-        }
-        if (versionNumber == null || versionNumber < 1) {
-            throw new TextValidationException("Version number is required and must be at least 1");
-        }
-        if (copyNumber == null || copyNumber < 1) {
-            throw new TextValidationException("Copy number is required and must be at least 1");
+            textVersion = "ORIGINAL";
         }
 
         // Serialise concurrent creates for the same project so the
@@ -474,15 +474,7 @@ public class TextService {
     // ─── Validation ──────────────────────────────────────────────────────────────
 
     private void validateCreate(TextCreateRequestDTO dto, MultipartFile textFile) {
-        if (dto == null) {
-            throw new TextValidationException("Text payload is required");
-        }
-        if (textFile == null || textFile.isEmpty()) {
-            throw new TextValidationException("Text file is required");
-        }
-        if (dto.getProjectCode() == null || dto.getProjectCode().isBlank()) {
-            throw new TextValidationException("Project code is required");
-        }
+        // All fields optional — defaults are applied by the create flow.
     }
 
     private void validateProjectNotChanged(Text text, TextBaseRequestDTO dto) {
@@ -731,10 +723,27 @@ public class TextService {
 
     private Project resolveProject(String projectCode) {
         if (projectCode == null || projectCode.isBlank()) {
-            throw new TextValidationException("Project code is required");
+            return resolveDefaultProject();
         }
         return projectRepository.findByProjectCodeAndRemovedAtIsNull(projectCode.trim())
-                .orElseThrow(() -> new ProjectNotFoundException("Project not found: " + projectCode));
+                .orElseGet(() -> {
+                    Project p = new Project();
+                    p.setProjectCode(projectCode.trim());
+                    p.setProjectName(projectCode.trim());
+                    p.setIsVisibleToPublic(true);
+                    return projectRepository.save(p);
+                });
+    }
+
+    private Project resolveDefaultProject() {
+        return projectRepository.findByProjectCodeAndRemovedAtIsNull("GENERAL")
+                .orElseGet(() -> {
+                    Project p = new Project();
+                    p.setProjectCode("GENERAL");
+                    p.setProjectName("General");
+                    p.setIsVisibleToPublic(true);
+                    return projectRepository.save(p);
+                });
     }
 
     private String uploadTextFile(MultipartFile textFile, String textCode) {

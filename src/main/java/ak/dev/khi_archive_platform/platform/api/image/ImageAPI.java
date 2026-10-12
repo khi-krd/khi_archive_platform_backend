@@ -109,7 +109,7 @@ public class ImageAPI {
     @PostMapping(value = "/bulk", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('image:create')")
     public ResponseEntity<ImageService.BulkCreateResult> createAll(
-            @RequestBody List<ImageBulkCreateRequestDTO> dtos,
+            @RequestBody(required = false) List<ImageBulkCreateRequestDTO> dtos,
             Authentication auth,
             HttpServletRequest request
     ) {
@@ -138,7 +138,7 @@ public class ImageAPI {
     @PreAuthorize("hasAuthority('image:update')")
     public ResponseEntity<ImageResponseDTO> setVisibility(
             @PathVariable String imageCode,
-            @Valid @RequestBody VisibilityUpdateRequest body,
+            @Valid @RequestBody(required = false) VisibilityUpdateRequest body,
             Authentication auth,
             HttpServletRequest request
     ) {

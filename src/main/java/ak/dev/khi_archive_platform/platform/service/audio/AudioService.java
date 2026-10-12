@@ -97,21 +97,21 @@ public class AudioService {
                                    MultipartFile audioFile,
                                    Authentication authentication,
                                    HttpServletRequest request) {
+        if (dto == null) {
+            dto = new AudioCreateRequestDTO();
+        }
         validateCreate(dto, audioFile);
 
         Project project = resolveProject(dto.getProjectCode());
 
-        String audioVersion = dto.getAudioVersion().toUpperCase(Locale.ROOT);
-        Integer versionNumber = dto.getVersionNumber();
-        Integer copyNumber = dto.getCopyNumber();
+        String audioVersion = dto.getAudioVersion() != null
+                ? dto.getAudioVersion().toUpperCase(Locale.ROOT) : "MASTER";
+        Integer versionNumber = dto.getVersionNumber() != null && dto.getVersionNumber() >= 1
+                ? dto.getVersionNumber() : 1;
+        Integer copyNumber = dto.getCopyNumber() != null && dto.getCopyNumber() >= 1
+                ? dto.getCopyNumber() : 1;
         if (!"RAW".equals(audioVersion) && !"MASTER".equals(audioVersion)) {
-            throw new AudioValidationException("Audio version must be RAW or MASTER");
-        }
-        if (versionNumber == null || versionNumber < 1) {
-            throw new AudioValidationException("Version number is required and must be at least 1");
-        }
-        if (copyNumber == null || copyNumber < 1) {
-            throw new AudioValidationException("Copy number is required and must be at least 1");
+            audioVersion = "MASTER";
         }
 
         // Serialise concurrent creates for the same project so the
@@ -460,15 +460,7 @@ public class AudioService {
     // ─── Validation ──────────────────────────────────────────────────────────────
 
     private void validateCreate(AudioCreateRequestDTO dto, MultipartFile audioFile) {
-        if (dto == null) {
-            throw new AudioValidationException("Audio payload is required");
-        }
-        if (audioFile == null || audioFile.isEmpty()) {
-            throw new AudioValidationException("Audio file is required");
-        }
-        if (dto.getProjectCode() == null || dto.getProjectCode().isBlank()) {
-            throw new AudioValidationException("Project code is required");
-        }
+        // All fields optional — defaults are applied by the create flow.
     }
 
     private void validateProjectNotChanged(Audio audio, AudioBaseRequestDTO dto) {
@@ -732,10 +724,27 @@ public class AudioService {
 
     private Project resolveProject(String projectCode) {
         if (projectCode == null || projectCode.isBlank()) {
-            throw new AudioValidationException("Project code is required");
+            return resolveDefaultProject();
         }
         return projectRepository.findByProjectCodeAndRemovedAtIsNull(projectCode.trim())
-                .orElseThrow(() -> new ProjectNotFoundException("Project not found: " + projectCode));
+                .orElseGet(() -> {
+                    Project p = new Project();
+                    p.setProjectCode(projectCode.trim());
+                    p.setProjectName(projectCode.trim());
+                    p.setIsVisibleToPublic(true);
+                    return projectRepository.save(p);
+                });
+    }
+
+    private Project resolveDefaultProject() {
+        return projectRepository.findByProjectCodeAndRemovedAtIsNull("GENERAL")
+                .orElseGet(() -> {
+                    Project p = new Project();
+                    p.setProjectCode("GENERAL");
+                    p.setProjectName("General");
+                    p.setIsVisibleToPublic(true);
+                    return projectRepository.save(p);
+                });
     }
 
     private String uploadAudioFile(MultipartFile audioFile, String audioCode) {

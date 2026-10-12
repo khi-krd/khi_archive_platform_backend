@@ -99,21 +99,21 @@ public class VideoService {
                                    MultipartFile videoFile,
                                    Authentication authentication,
                                    HttpServletRequest request) {
+        if (dto == null) {
+            dto = new VideoCreateRequestDTO();
+        }
         validateCreate(dto, videoFile);
 
         Project project = resolveProject(dto.getProjectCode());
 
-        String videoVersion = dto.getVideoVersion().toUpperCase(Locale.ROOT);
-        Integer versionNumber = dto.getVersionNumber();
-        Integer copyNumber = dto.getCopyNumber();
+        String videoVersion = dto.getVideoVersion() != null
+                ? dto.getVideoVersion().toUpperCase(Locale.ROOT) : "ORIGINAL";
+        Integer versionNumber = dto.getVersionNumber() != null && dto.getVersionNumber() >= 1
+                ? dto.getVersionNumber() : 1;
+        Integer copyNumber = dto.getCopyNumber() != null && dto.getCopyNumber() >= 1
+                ? dto.getCopyNumber() : 1;
         if (!VALID_VERSIONS.contains(videoVersion)) {
-            throw new VideoValidationException("Video version must be one of: RAW, MASTER, RESTORED, ARCHIVE, ORIGINAL, 4K_MASTER, PROFESSIONAL");
-        }
-        if (versionNumber == null || versionNumber < 1) {
-            throw new VideoValidationException("Version number is required and must be at least 1");
-        }
-        if (copyNumber == null || copyNumber < 1) {
-            throw new VideoValidationException("Copy number is required and must be at least 1");
+            videoVersion = "ORIGINAL";
         }
 
         // Serialise concurrent creates for the same project so the
@@ -462,15 +462,7 @@ public class VideoService {
     // ─── Validation ──────────────────────────────────────────────────────────────
 
     private void validateCreate(VideoCreateRequestDTO dto, MultipartFile videoFile) {
-        if (dto == null) {
-            throw new VideoValidationException("Video payload is required");
-        }
-        if (videoFile == null || videoFile.isEmpty()) {
-            throw new VideoValidationException("Video file is required");
-        }
-        if (dto.getProjectCode() == null || dto.getProjectCode().isBlank()) {
-            throw new VideoValidationException("Project code is required");
-        }
+        // All fields optional — defaults are applied by the create flow.
     }
 
     private void validateProjectNotChanged(Video video, VideoBaseRequestDTO dto) {
@@ -721,10 +713,27 @@ public class VideoService {
 
     private Project resolveProject(String projectCode) {
         if (projectCode == null || projectCode.isBlank()) {
-            throw new VideoValidationException("Project code is required");
+            return resolveDefaultProject();
         }
         return projectRepository.findByProjectCodeAndRemovedAtIsNull(projectCode.trim())
-                .orElseThrow(() -> new ProjectNotFoundException("Project not found: " + projectCode));
+                .orElseGet(() -> {
+                    Project p = new Project();
+                    p.setProjectCode(projectCode.trim());
+                    p.setProjectName(projectCode.trim());
+                    p.setIsVisibleToPublic(true);
+                    return projectRepository.save(p);
+                });
+    }
+
+    private Project resolveDefaultProject() {
+        return projectRepository.findByProjectCodeAndRemovedAtIsNull("GENERAL")
+                .orElseGet(() -> {
+                    Project p = new Project();
+                    p.setProjectCode("GENERAL");
+                    p.setProjectName("General");
+                    p.setIsVisibleToPublic(true);
+                    return projectRepository.save(p);
+                });
     }
 
     private String uploadVideoFile(MultipartFile videoFile, String videoCode) {

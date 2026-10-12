@@ -13,6 +13,5 @@ public class AdminCorrectionForwardRequestDTO {
      */
     private Long targetEmployeeId;
 
-    @Size(max = 2000, message = "forwardNote must not exceed 2000 characters")
     private String forwardNote;
 }

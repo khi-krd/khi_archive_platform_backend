@@ -39,7 +39,12 @@ public class CategoryService {
     public CategoryResponseDTO create(CategoryCreateRequestDTO dto,
                                       Authentication authentication,
                                       HttpServletRequest request) {
-        String categoryCode = CategoryCodeHelper.normalizeAndValidate(dto.getCategoryCode());
+        if (dto == null) {
+            dto = new CategoryCreateRequestDTO();
+        }
+        String categoryCode = (dto.getCategoryCode() == null || dto.getCategoryCode().isBlank())
+                ? generateCategoryCode()
+                : CategoryCodeHelper.normalizeAndValidate(dto.getCategoryCode());
 
         if (categoryRepository.existsByCategoryCodeAndRemovedAtIsNull(categoryCode)) {
             throw new CategoryAlreadyExistsException("Category code already exists");
@@ -47,7 +52,7 @@ public class CategoryService {
 
         Category category = Category.builder()
                 .categoryCode(categoryCode)
-                .name(dto.getName())
+                .name(dto.getName() != null && !dto.getName().isBlank() ? dto.getName() : categoryCode)
                 .description(dto.getDescription())
                 .keywords(ak.dev.khi_archive_platform.platform.service.common.Keywords.canonical(dto.getKeywords()))
                 .build();
@@ -332,6 +337,14 @@ public class CategoryService {
                         + " returned=" + page.getNumberOfElements()
                         + " total=" + page.getTotalElements() + ")");
         return page;
+    }
+
+    private String generateCategoryCode() {
+        String code;
+        do {
+            code = "CAT-" + java.util.UUID.randomUUID().toString().substring(0, 8).toUpperCase(java.util.Locale.ROOT);
+        } while (categoryRepository.existsByCategoryCodeAndRemovedAtIsNull(code));
+        return code;
     }
 
     private void touchCreateAudit(Category category, Authentication authentication) {

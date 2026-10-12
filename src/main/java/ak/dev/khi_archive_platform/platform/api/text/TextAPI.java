@@ -109,7 +109,7 @@ public class TextAPI {
     @PostMapping(value = "/bulk", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('text:create')")
     public ResponseEntity<TextService.BulkCreateResult> createAll(
-            @RequestBody List<TextBulkCreateRequestDTO> dtos,
+            @RequestBody(required = false) List<TextBulkCreateRequestDTO> dtos,
             Authentication auth,
             HttpServletRequest request
     ) {
@@ -139,7 +139,7 @@ public class TextAPI {
     @PreAuthorize("hasAuthority('text:update')")
     public ResponseEntity<TextResponseDTO> setVisibility(
             @PathVariable String textCode,
-            @Valid @RequestBody VisibilityUpdateRequest body,
+            @Valid @RequestBody(required = false) VisibilityUpdateRequest body,
             Authentication auth,
             HttpServletRequest request
     ) {

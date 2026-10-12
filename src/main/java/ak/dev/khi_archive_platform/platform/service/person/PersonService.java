@@ -51,6 +51,9 @@ public class PersonService {
                                           MultipartFile mediaPortrait,
                                           Authentication authentication,
                                           HttpServletRequest request) {
+        if (dto == null) {
+            dto = new PersonCreateRequestDTO();
+        }
         String personCode = normalizePersonCode(dto.getPersonCode());
 
         if (personRepository.existsByPersonCodeAndRemovedAtIsNull(personCode)) {
@@ -59,7 +62,8 @@ public class PersonService {
 
         Person person = new Person();
         person.setPersonCode(personCode);
-        person.setFullName(dto.getFullName());
+        person.setFullName(dto.getFullName() != null && !dto.getFullName().isBlank()
+                ? dto.getFullName() : personCode);
         applyFields(person, dto.getNickname(), dto.getRomanizedName(), dto.getGender(), dto.getPersonType(), dto.getRegion(),
                 dto.getDateOfBirthYear(), dto.getDateOfBirthMonth(), dto.getDateOfBirthDay(), dto.getPlaceOfBirth(),
                 dto.getDateOfDeathYear(), dto.getDateOfDeathMonth(), dto.getDateOfDeathDay(), dto.getPlaceOfDeath(),
@@ -508,14 +512,18 @@ public class PersonService {
     }
 
     private String normalizePersonCode(String personCode) {
-        if (personCode == null) {
-            throw new IllegalArgumentException("Person code is required");
+        if (personCode == null || personCode.isBlank()) {
+            return generatePersonCode();
         }
-        String trimmed = personCode.trim();
-        if (trimmed.isBlank()) {
-            throw new IllegalArgumentException("Person code is required");
-        }
-        return trimmed;
+        return personCode.trim();
+    }
+
+    private String generatePersonCode() {
+        String code;
+        do {
+            code = "P-" + java.util.UUID.randomUUID().toString().substring(0, 8).toUpperCase(java.util.Locale.ROOT);
+        } while (personRepository.existsByPersonCodeAndRemovedAtIsNull(code));
+        return code;
     }
 
     private void requireAdminRole(Authentication authentication) {

@@ -20,24 +20,20 @@ public class ImageCreateRequestDTO extends ImageBaseRequestDTO {
             "HIGH_RES", "PROFESSIONAL"
     );
 
-    @AssertTrue(message = "Project code is required for image creation.")
     public boolean isProjectCodePresent() {
         return getProjectCode() != null && !getProjectCode().isBlank();
     }
 
-    @AssertTrue(message = "Image version is required and must be one of: RAW, MASTER, RESTORED, ARCHIVE, ORIGINAL, HIGH_RES, PROFESSIONAL.")
     public boolean isImageVersionValid() {
         String iv = getImageVersion();
         return iv != null && VALID_VERSIONS.contains(iv.toUpperCase(java.util.Locale.ROOT));
     }
 
-    @AssertTrue(message = "Version number is required and must be at least 1.")
     public boolean isVersionNumberValid() {
         Integer vn = getVersionNumber();
         return vn != null && vn >= 1;
     }
 
-    @AssertTrue(message = "Copy number is required and must be at least 1.")
     public boolean isCopyNumberValid() {
         Integer cn = getCopyNumber();
         return cn != null && cn >= 1;

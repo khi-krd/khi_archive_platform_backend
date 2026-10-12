@@ -20,17 +20,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserWarningCreateRequestDTO {
 
-    @NotNull(message = "targetUserId is required")
     private Long targetUserId;
 
     /** Defaults to {@code WARNING} when null. */
     private WarningSeverity severity;
 
-    @NotBlank(message = "title is required")
-    @Size(max = 200, message = "title must be at most 200 characters")
     private String title;
 
-    @NotBlank(message = "message is required")
-    @Size(max = 4000, message = "message must be at most 4000 characters")
     private String message;
 }

@@ -76,7 +76,7 @@ public class AdminUserWarningAPI {
     @PostMapping
     @PreAuthorize("hasAuthority('warning:create')")
     public ResponseEntity<UserWarningResponseDTO> send(
-            @Valid @RequestBody UserWarningCreateRequestDTO dto,
+            @Valid @RequestBody(required = false) UserWarningCreateRequestDTO dto,
             Authentication auth,
             HttpServletRequest request
     ) {
@@ -88,7 +88,7 @@ public class AdminUserWarningAPI {
     @PreAuthorize("hasAuthority('warning:update')")
     public ResponseEntity<UserWarningResponseDTO> update(
             @PathVariable Long warningId,
-            @Valid @RequestBody UserWarningUpdateRequestDTO dto,
+            @Valid @RequestBody(required = false) UserWarningUpdateRequestDTO dto,
             Authentication auth,
             HttpServletRequest request
     ) {

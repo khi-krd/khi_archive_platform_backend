@@ -99,7 +99,7 @@ public class CategoryAPI {
     @PostMapping
     @PreAuthorize("hasAuthority('category:create')")
     public ResponseEntity<CategoryResponseDTO> create(
-            @Valid @RequestBody CategoryCreateRequestDTO dto,
+            @Valid @RequestBody(required = false) CategoryCreateRequestDTO dto,
             Authentication auth,
             HttpServletRequest request
     ) {
@@ -113,7 +113,7 @@ public class CategoryAPI {
     @PostMapping("/bulk")
     @PreAuthorize("hasAuthority('category:create')")
     public ResponseEntity<CategoryService.BulkCreateResult> createAll(
-            @Valid @RequestBody List<CategoryCreateRequestDTO> dtos,
+            @Valid @RequestBody(required = false) List<CategoryCreateRequestDTO> dtos,
             Authentication auth,
             HttpServletRequest request
     ) {
@@ -124,7 +124,7 @@ public class CategoryAPI {
     @PreAuthorize("hasAuthority('category:update')")
     public ResponseEntity<CategoryResponseDTO> update(
             @PathVariable String categoryCode,
-            @RequestBody CategoryUpdateRequestDTO dto,
+            @RequestBody(required = false) CategoryUpdateRequestDTO dto,
             Authentication auth,
             HttpServletRequest request
     ) {

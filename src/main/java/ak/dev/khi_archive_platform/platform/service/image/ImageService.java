@@ -100,21 +100,21 @@ public class ImageService {
                                    MultipartFile imageFile,
                                    Authentication authentication,
                                    HttpServletRequest request) {
+        if (dto == null) {
+            dto = new ImageCreateRequestDTO();
+        }
         validateCreate(dto, imageFile);
 
         Project project = resolveProject(dto.getProjectCode());
 
-        String imageVersion = dto.getImageVersion().toUpperCase(Locale.ROOT);
-        Integer versionNumber = dto.getVersionNumber();
-        Integer copyNumber = dto.getCopyNumber();
+        String imageVersion = dto.getImageVersion() != null
+                ? dto.getImageVersion().toUpperCase(Locale.ROOT) : "ORIGINAL";
+        Integer versionNumber = dto.getVersionNumber() != null && dto.getVersionNumber() >= 1
+                ? dto.getVersionNumber() : 1;
+        Integer copyNumber = dto.getCopyNumber() != null && dto.getCopyNumber() >= 1
+                ? dto.getCopyNumber() : 1;
         if (!VALID_VERSIONS.contains(imageVersion)) {
-            throw new ImageValidationException("Image version must be one of: RAW, MASTER, RESTORED, ARCHIVE, ORIGINAL, HIGH_RES, PROFESSIONAL");
-        }
-        if (versionNumber == null || versionNumber < 1) {
-            throw new ImageValidationException("Version number is required and must be at least 1");
-        }
-        if (copyNumber == null || copyNumber < 1) {
-            throw new ImageValidationException("Copy number is required and must be at least 1");
+            imageVersion = "ORIGINAL";
         }
 
         // Serialise concurrent creates for the same project so the
@@ -467,15 +467,7 @@ public class ImageService {
     // ─── Validation ──────────────────────────────────────────────────────────────
 
     private void validateCreate(ImageCreateRequestDTO dto, MultipartFile imageFile) {
-        if (dto == null) {
-            throw new ImageValidationException("Image payload is required");
-        }
-        if (imageFile == null || imageFile.isEmpty()) {
-            throw new ImageValidationException("Image file is required");
-        }
-        if (dto.getProjectCode() == null || dto.getProjectCode().isBlank()) {
-            throw new ImageValidationException("Project code is required");
-        }
+        // All fields optional — defaults are applied by the create flow.
     }
 
     private void validateProjectNotChanged(Image image, ImageBaseRequestDTO dto) {
@@ -716,10 +708,27 @@ public class ImageService {
 
     private Project resolveProject(String projectCode) {
         if (projectCode == null || projectCode.isBlank()) {
-            throw new ImageValidationException("Project code is required");
+            return resolveDefaultProject();
         }
         return projectRepository.findByProjectCodeAndRemovedAtIsNull(projectCode.trim())
-                .orElseThrow(() -> new ProjectNotFoundException("Project not found: " + projectCode));
+                .orElseGet(() -> {
+                    Project p = new Project();
+                    p.setProjectCode(projectCode.trim());
+                    p.setProjectName(projectCode.trim());
+                    p.setIsVisibleToPublic(true);
+                    return projectRepository.save(p);
+                });
+    }
+
+    private Project resolveDefaultProject() {
+        return projectRepository.findByProjectCodeAndRemovedAtIsNull("GENERAL")
+                .orElseGet(() -> {
+                    Project p = new Project();
+                    p.setProjectCode("GENERAL");
+                    p.setProjectName("General");
+                    p.setIsVisibleToPublic(true);
+                    return projectRepository.save(p);
+                });
     }
 
     private String uploadImageFile(MultipartFile imageFile, String imageCode) {

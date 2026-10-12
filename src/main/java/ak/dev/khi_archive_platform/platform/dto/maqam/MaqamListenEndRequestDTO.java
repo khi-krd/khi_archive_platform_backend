@@ -20,13 +20,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class MaqamListenEndRequestDTO {
 
-    @NotBlank(message = "sessionKey is required")
-    @Size(max = 100)
     private String sessionKey;
 
-    @PositiveOrZero
     private Long addSeconds;
 
-    @PositiveOrZero
     private Long positionSeconds;
 }

@@ -3,6 +3,7 @@ package ak.dev.khi_archive_platform.platform.service.physicalmedia;
 import ak.dev.khi_archive_platform.platform.dto.physicalmedia.PhysicalMediaCreateRequestDTO;
 import ak.dev.khi_archive_platform.platform.dto.physicalmedia.PhysicalMediaFilterParams;
 import ak.dev.khi_archive_platform.platform.dto.physicalmedia.PhysicalMediaResponseDTO;
+import ak.dev.khi_archive_platform.platform.dto.physicalmedia.PhysicalMediaTypeCreateRequestDTO;
 import ak.dev.khi_archive_platform.platform.dto.physicalmedia.PhysicalMediaUpdateRequestDTO;
 import ak.dev.khi_archive_platform.platform.enums.PhysicalMediaAuditAction;
 import ak.dev.khi_archive_platform.platform.exceptions.PhysicalMediaNotFoundException;
@@ -63,7 +64,13 @@ public class PhysicalMediaService {
     public PhysicalMediaResponseDTO create(PhysicalMediaCreateRequestDTO dto,
                                            Authentication auth,
                                            HttpServletRequest request) {
+        if (dto == null) {
+            dto = new PhysicalMediaCreateRequestDTO();
+        }
         validateRequiredOnCreate(dto);
+        if (isBlank(dto.getPhysicalMediaType())) {
+            dto.setPhysicalMediaType(defaultTypeName(auth, request));
+        }
 
         PhysicalMedia entity = new PhysicalMedia();
         entity.setPmCode(generateCode());
@@ -327,24 +334,15 @@ public class PhysicalMediaService {
     }
 
     private void validateRequiredOnCreate(PhysicalMediaCreateRequestDTO dto) {
-        Map<String, String> errors = new LinkedHashMap<>();
-        if (isBlank(dto.getPhysicalMediaType())) errors.put("physicalMediaType", "must not be blank");
-        if (isBlank(dto.getTitle()) && isBlank(dto.getPhysicalLabel())) {
-            errors.put("title", "title or physicalLabel must be provided");
+        // All fields optional — defaults are applied by the create flow.
+    }
+
+    private String defaultTypeName(Authentication auth, HttpServletRequest request) {
+        String name = "Uncategorized";
+        if (!typeService.existsByName(name)) {
+            typeService.create(PhysicalMediaTypeCreateRequestDTO.builder().name(name).build(), auth, request);
         }
-        // Strict on manual create: the frontend dropdown is driven by the
-        // catalog, so a value it doesn't contain is almost always a typo.
-        // The Excel importer takes a different path that auto-creates
-        // unknown types instead of rejecting.
-        if (errors.isEmpty()
-                && !isBlank(dto.getPhysicalMediaType())
-                && !typeService.existsByName(dto.getPhysicalMediaType())) {
-            errors.put("physicalMediaType",
-                    "not in the type catalog — add it via /api/physical-media/types first");
-        }
-        if (!errors.isEmpty()) {
-            throw new PhysicalMediaValidationException("Validation failed", errors);
-        }
+        return name;
     }
 
     private String generateCode() {

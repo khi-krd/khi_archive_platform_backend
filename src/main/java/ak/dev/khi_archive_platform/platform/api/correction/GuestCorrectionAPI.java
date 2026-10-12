@@ -35,7 +35,7 @@ public class GuestCorrectionAPI {
      */
     @PostMapping
     public ResponseEntity<GuestCorrectionResponseDTO> submit(
-            @Valid @RequestBody GuestCorrectionSubmitRequestDTO dto,
+            @Valid @RequestBody(required = false) GuestCorrectionSubmitRequestDTO dto,
             Authentication auth,
             HttpServletRequest request
     ) {

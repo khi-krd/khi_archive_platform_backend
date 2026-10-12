@@ -53,7 +53,7 @@ public class AdminTagAPI {
     }
 
     @PatchMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<VocabularyRenameResult> rename(@Valid @RequestBody VocabularyRenameRequest body) {
+    public ResponseEntity<VocabularyRenameResult> rename(@Valid @RequestBody(required = false) VocabularyRenameRequest body) {
         return ResponseEntity.ok(service.rename(body.from(), body.to()));
     }
 

@@ -20,9 +20,7 @@ public class UserWarningUpdateRequestDTO {
 
     private WarningSeverity severity;
 
-    @Size(max = 200, message = "title must be at most 200 characters")
     private String title;
 
-    @Size(max = 4000, message = "message must be at most 4000 characters")
     private String message;
 }

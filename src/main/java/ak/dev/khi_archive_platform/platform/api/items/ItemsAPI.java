@@ -123,7 +123,7 @@ public class ItemsAPI {
     public ResponseEntity<Object> setVisibility(
             @PathVariable String type,
             @PathVariable String code,
-            @Valid @RequestBody VisibilityUpdateRequest body,
+            @Valid @RequestBody(required = false) VisibilityUpdateRequest body,
             Authentication auth,
             HttpServletRequest request
     ) {

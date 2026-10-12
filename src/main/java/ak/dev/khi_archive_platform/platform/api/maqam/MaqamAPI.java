@@ -206,7 +206,7 @@ public class MaqamAPI {
     @PreAuthorize("hasAuthority('maqam:vote')")
     public ResponseEntity<MaqamResponseDTO> vote(
             @PathVariable String maqamCode,
-            @Valid @RequestBody MaqamVoteRequestDTO dto,
+            @Valid @RequestBody(required = false) MaqamVoteRequestDTO dto,
             Authentication auth,
             HttpServletRequest request) {
         return ResponseEntity.ok(maqamService.upsertVote(maqamCode, dto.getMaqamType(), dto.getTeacherNote(), auth, request));
@@ -218,7 +218,7 @@ public class MaqamAPI {
     @PreAuthorize("hasAuthority('maqam:vote')")
     public ResponseEntity<MaqamListenSessionDTO> startListen(
             @PathVariable String maqamCode,
-            @Valid @RequestBody MaqamListenStartRequestDTO dto,
+            @Valid @RequestBody(required = false) MaqamListenStartRequestDTO dto,
             Authentication auth,
             HttpServletRequest request) {
         return ResponseEntity.ok(maqamService.startListenSession(
@@ -229,7 +229,7 @@ public class MaqamAPI {
     @PreAuthorize("hasAuthority('maqam:vote')")
     public ResponseEntity<MaqamListenSessionDTO> progressListen(
             @PathVariable String maqamCode,
-            @Valid @RequestBody MaqamListenProgressRequestDTO dto,
+            @Valid @RequestBody(required = false) MaqamListenProgressRequestDTO dto,
             Authentication auth,
             HttpServletRequest request) {
         return ResponseEntity.ok(maqamService.recordProgress(maqamCode, dto.getSessionKey(),
@@ -240,7 +240,7 @@ public class MaqamAPI {
     @PreAuthorize("hasAuthority('maqam:vote')")
     public ResponseEntity<MaqamListenSessionDTO> endListen(
             @PathVariable String maqamCode,
-            @Valid @RequestBody MaqamListenEndRequestDTO dto,
+            @Valid @RequestBody(required = false) MaqamListenEndRequestDTO dto,
             Authentication auth,
             HttpServletRequest request) {
         long add = dto.getAddSeconds() == null ? 0L : dto.getAddSeconds();

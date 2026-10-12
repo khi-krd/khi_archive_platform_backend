@@ -34,7 +34,7 @@ public class UserAPI {
     // ── REGISTER (JSON, no image) ─────────────────────────────────────────────
     @PostMapping("/register")
     public ResponseEntity<Token> register(
-            @Valid @RequestBody RegisterRequestDTO dto,
+            @Valid @RequestBody(required = false) RegisterRequestDTO dto,
             HttpServletRequest request,
             HttpServletResponse response
     ) {
@@ -55,7 +55,7 @@ public class UserAPI {
     // ── LOGIN (username OR email) ─────────────────────────────────────────────
     @PostMapping("/login")
     public ResponseEntity<Token> login(
-            @Valid @RequestBody LoginRequestDTO dto,
+            @Valid @RequestBody(required = false) LoginRequestDTO dto,
             HttpServletRequest request,
             HttpServletResponse response
     ) {

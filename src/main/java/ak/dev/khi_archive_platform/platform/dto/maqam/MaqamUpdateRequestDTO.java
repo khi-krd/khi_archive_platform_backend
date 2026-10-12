@@ -18,12 +18,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class MaqamUpdateRequestDTO {
 
-    @Size(max = 1000)
     private String songName;
 
-    @Size(max = 500)
     private String producer;
 
-    @Size(max = 10_000)
     private String archiveNote;
 }

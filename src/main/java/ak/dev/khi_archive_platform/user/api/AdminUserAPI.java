@@ -73,7 +73,7 @@ public class AdminUserAPI {
      */
     @PostMapping
     @PreAuthorize("hasAuthority('user:create')")
-    public ResponseEntity<UserAdminDTO> create(@Valid @RequestBody UserCreateRequestDTO dto,
+    public ResponseEntity<UserAdminDTO> create(@Valid @RequestBody(required = false) UserCreateRequestDTO dto,
                                                Authentication auth,
                                                HttpServletRequest request) {
         return ResponseEntity.ok(adminUserService.createUserAsAdmin(dto, auth, request));
@@ -89,7 +89,7 @@ public class AdminUserAPI {
     @PutMapping("/{userId}")
     @PreAuthorize("hasAuthority('user:update')")
     public ResponseEntity<UserAdminDTO> update(@PathVariable Long userId,
-                                               @Valid @RequestBody UserUpdateRequestDTO dto,
+                                               @Valid @RequestBody(required = false) UserUpdateRequestDTO dto,
                                                Authentication auth,
                                                HttpServletRequest request) {
         return ResponseEntity.ok(adminUserService.updateUserAsAdmin(userId, dto, auth, request));
@@ -108,7 +108,7 @@ public class AdminUserAPI {
     @PutMapping("/{userId}/role")
     @PreAuthorize("hasAuthority('user:update')")
     public ResponseEntity<UserAdminDTO> changeRole(@PathVariable Long userId,
-                                                   @Valid @RequestBody RoleChangeRequestDTO dto,
+                                                   @Valid @RequestBody(required = false) RoleChangeRequestDTO dto,
                                                    Authentication auth,
                                                    HttpServletRequest request) {
         return ResponseEntity.ok(adminUserService.changeRole(userId, dto, auth, request));
@@ -119,7 +119,7 @@ public class AdminUserAPI {
     @PostMapping("/{userId}/permissions")
     @PreAuthorize("hasAuthority('user:update')")
     public ResponseEntity<UserAdminDTO> grantPermissions(@PathVariable Long userId,
-                                                         @Valid @RequestBody PermissionsChangeRequestDTO dto,
+                                                         @Valid @RequestBody(required = false) PermissionsChangeRequestDTO dto,
                                                          Authentication auth,
                                                          HttpServletRequest request) {
         return ResponseEntity.ok(adminUserService.grantPermissions(userId, dto, auth, request));
@@ -129,7 +129,7 @@ public class AdminUserAPI {
     @DeleteMapping("/{userId}/permissions")
     @PreAuthorize("hasAuthority('user:update')")
     public ResponseEntity<UserAdminDTO> revokePermissions(@PathVariable Long userId,
-                                                          @Valid @RequestBody PermissionsChangeRequestDTO dto,
+                                                          @Valid @RequestBody(required = false) PermissionsChangeRequestDTO dto,
                                                           Authentication auth,
                                                           HttpServletRequest request) {
         return ResponseEntity.ok(adminUserService.revokePermissions(userId, dto, auth, request));

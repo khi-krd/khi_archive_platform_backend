@@ -6,6 +6,5 @@ import lombok.Data;
 @Data
 public class AdminCorrectionApplyRequestDTO {
 
-    @Size(max = 2000, message = "resolveNote must not exceed 2000 characters")
     private String resolveNote;
 }

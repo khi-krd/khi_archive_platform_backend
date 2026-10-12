@@ -8,5 +8,5 @@ import jakarta.validation.constraints.NotBlank;
  * server-side (NFKC, trim, collapse whitespace, lower-case) before matching, so
  * the client need not pre-process.
  */
-public record VocabularyRenameRequest(@NotBlank String from, @NotBlank String to) {
+public record VocabularyRenameRequest(String from, String to) {
 }

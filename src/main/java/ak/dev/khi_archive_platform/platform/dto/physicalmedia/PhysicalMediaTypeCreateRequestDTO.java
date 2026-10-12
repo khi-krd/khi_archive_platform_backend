@@ -18,21 +18,19 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PhysicalMediaTypeCreateRequestDTO {
 
-    @NotBlank
-    @Size(max = 200)
     private String name;
 
     private String description;
 
-    @Size(max = 50)  private String extension;
-    @Size(max = 100) private String bitOrColorDepth;
-    @Size(max = 100) private String sampleOrFrameRate;
-    @Size(max = 100) private String channelsOrResolution;
+    private String extension;
+    private String bitOrColorDepth;
+    private String sampleOrFrameRate;
+    private String channelsOrResolution;
 
     private String playbackModel;
     private String captureInterface;
     private String signalInterface;
     private String ingestSoftware;
 
-    @Size(max = 200) private String formatCodec;
+    private String formatCodec;
 }

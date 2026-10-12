@@ -17,12 +17,8 @@ import java.util.List;
 @AllArgsConstructor
 public class PersonCreateRequestDTO {
 
-    @NotBlank(message = "Person code is required")
-    @Size(max = 50, message = "Person code must not exceed 50 characters")
-    @Pattern(regexp = ValidationPatterns.PERSON_CODE, message = "Person code must contain only letters, numbers, underscores, or hyphens")
     private String personCode;
 
-    @NotBlank(message = "Full name is required")
     private String fullName;
 
     private String nickname;

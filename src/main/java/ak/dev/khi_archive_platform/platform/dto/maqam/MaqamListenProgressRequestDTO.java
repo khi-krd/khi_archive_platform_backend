@@ -24,15 +24,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class MaqamListenProgressRequestDTO {
 
-    @NotBlank(message = "sessionKey is required")
-    @Size(max = 100)
     private String sessionKey;
 
-    @NotNull(message = "addSeconds is required")
-    @PositiveOrZero
     private Long addSeconds;
 
-    @NotNull(message = "positionSeconds is required")
-    @PositiveOrZero
     private Long positionSeconds;
 }

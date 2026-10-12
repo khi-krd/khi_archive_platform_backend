@@ -21,15 +21,10 @@ import java.util.List;
 @AllArgsConstructor
 public class MaqamCreateRequestDTO {
 
-    @NotBlank(message = "songName is required")
-    @Size(max = 1000)
     private String songName;
 
-    @NotBlank(message = "producer is required")
-    @Size(max = 500)
     private String producer;
 
-    @Size(max = 10_000)
     private String archiveNote;
 
     /** Optional. When provided, must contain 1–3 user IDs and every ID must

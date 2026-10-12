@@ -84,10 +84,7 @@ public class ProjectService {
                                      Authentication authentication,
                                      HttpServletRequest request) {
         if (dto == null) {
-            throw new ProjectValidationException("Project payload is required");
-        }
-        if (dto.getCategoryCodes() == null || dto.getCategoryCodes().isEmpty()) {
-            throw new ProjectValidationException("At least one category code is required");
+            dto = new ProjectCreateRequestDTO();
         }
 
         List<Category> categories = resolveCategories(dto.getCategoryCodes());
@@ -95,8 +92,6 @@ public class ProjectService {
 
         String projectCode = normalizeOptionalProjectCode(dto.getProjectCode());
         if (projectCode == null) {
-            // Legacy fallback only: keep existing behaviour when the frontend
-            // has not yet been updated to send a project code.
             String projectPrefix = ProjectCodeSupport.projectPrefix(person, dto.getProjectName());
             codeGenLock.lock("project-code:" + projectPrefix);
             projectCode = generateProjectCode(person, dto.getProjectName());
@@ -105,9 +100,12 @@ public class ProjectService {
             throw new ProjectAlreadyExistsException("Project already exists with code: " + projectCode);
         }
 
+        String projectName = dto.getProjectName() != null && !dto.getProjectName().isBlank()
+                ? dto.getProjectName() : projectCode;
+
         Project project = Project.builder()
                 .projectCode(projectCode)
-                .projectName(dto.getProjectName())
+                .projectName(projectName)
                 .person(person)
                 .categories(new ArrayList<>(categories))
                 .description(dto.getDescription())
@@ -612,14 +610,20 @@ public class ProjectService {
     }
 
     private List<Category> resolveCategories(List<String> categoryCodes) {
-        if (categoryCodes == null || categoryCodes.isEmpty()) {
-            throw new ProjectValidationException("At least one category code is required");
-        }
         List<Category> categories = new ArrayList<>();
+        if (categoryCodes == null || categoryCodes.isEmpty()) {
+            return categories;
+        }
         for (String code : categoryCodes) {
+            if (code == null || code.isBlank()) {
+                continue;
+            }
             String normalized = CategoryCodeHelper.normalizeAndValidate(code);
             Category category = categoryRepository.findByCategoryCodeAndRemovedAtIsNull(normalized)
-                    .orElseThrow(() -> new CategoryNotFoundException("Category not found: " + code));
+                    .orElseGet(() -> categoryRepository.save(Category.builder()
+                            .categoryCode(normalized)
+                            .name(normalized)
+                            .build()));
             categories.add(category);
         }
         return categories;
@@ -634,7 +638,12 @@ public class ProjectService {
             throw new ProjectValidationException("Invalid person code format: " + trimmed);
         }
         return personRepository.findByPersonCodeAndRemovedAtIsNull(trimmed)
-                .orElseThrow(() -> new PersonNotFoundException("Person not found: " + trimmed));
+                .orElseGet(() -> {
+                    Person p = new Person();
+                    p.setPersonCode(trimmed);
+                    p.setFullName(trimmed);
+                    return personRepository.save(p);
+                });
     }
 
     private String normalizeProjectCode(String projectCode) {

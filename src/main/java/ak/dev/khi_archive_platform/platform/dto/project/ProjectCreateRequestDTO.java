@@ -17,7 +17,6 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ProjectCreateRequestDTO {
 
-    @NotBlank(message = "Project name is required")
     private String projectName;
 
     /**
@@ -30,7 +29,6 @@ public class ProjectCreateRequestDTO {
     private String personCode;
 
     /** At least one category code is required. */
-    @NotEmpty(message = "At least one category code is required")
     private List<String> categoryCodes;
 
     private String description;

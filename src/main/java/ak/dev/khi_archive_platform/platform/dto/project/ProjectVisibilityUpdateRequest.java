@@ -10,6 +10,6 @@ import jakarta.validation.constraints.NotNull;
  * flag only — per-media flags are preserved).
  */
 public record ProjectVisibilityUpdateRequest(
-        @NotNull(message = "isVisibleToPublic is required") Boolean isVisibleToPublic,
+        Boolean isVisibleToPublic,
         String visibilityCascade
 ) {}

@@ -109,7 +109,7 @@ public class VideoAPI {
     @PostMapping(value = "/bulk", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('video:create')")
     public ResponseEntity<VideoService.BulkCreateResult> createAll(
-            @RequestBody List<VideoBulkCreateRequestDTO> dtos,
+            @RequestBody(required = false) List<VideoBulkCreateRequestDTO> dtos,
             Authentication auth,
             HttpServletRequest request
     ) {
@@ -138,7 +138,7 @@ public class VideoAPI {
     @PreAuthorize("hasAuthority('video:update')")
     public ResponseEntity<VideoResponseDTO> setVisibility(
             @PathVariable String videoCode,
-            @Valid @RequestBody VisibilityUpdateRequest body,
+            @Valid @RequestBody(required = false) VisibilityUpdateRequest body,
             Authentication auth,
             HttpServletRequest request
     ) {

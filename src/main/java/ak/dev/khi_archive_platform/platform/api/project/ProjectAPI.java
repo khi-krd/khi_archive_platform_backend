@@ -48,7 +48,7 @@ public class ProjectAPI {
     @PostMapping
     @PreAuthorize("hasAuthority('project:create')")
     public ResponseEntity<ProjectResponseDTO> create(
-            @Valid @RequestBody ProjectCreateRequestDTO dto,
+            @Valid @RequestBody(required = false) ProjectCreateRequestDTO dto,
             Authentication auth,
             HttpServletRequest request
     ) {
@@ -64,7 +64,7 @@ public class ProjectAPI {
     @PostMapping("/bulk")
     @PreAuthorize("hasAuthority('project:create')")
     public ResponseEntity<ProjectService.BulkCreateResult> createAll(
-            @Valid @RequestBody List<ProjectCreateRequestDTO> dtos,
+            @Valid @RequestBody(required = false) List<ProjectCreateRequestDTO> dtos,
             Authentication auth,
             HttpServletRequest request
     ) {
@@ -75,7 +75,7 @@ public class ProjectAPI {
     @PreAuthorize("hasAuthority('project:update')")
     public ResponseEntity<ProjectResponseDTO> update(
             @PathVariable String projectCode,
-            @RequestBody ProjectUpdateRequestDTO dto,
+            @RequestBody(required = false) ProjectUpdateRequestDTO dto,
             Authentication auth,
             HttpServletRequest request
     ) {
@@ -95,7 +95,7 @@ public class ProjectAPI {
     @PreAuthorize("hasAuthority('project:update')")
     public ResponseEntity<ProjectResponseDTO> setVisibility(
             @PathVariable String projectCode,
-            @Valid @RequestBody ProjectVisibilityUpdateRequest body,
+            @Valid @RequestBody(required = false) ProjectVisibilityUpdateRequest body,
             Authentication auth,
             HttpServletRequest request
     ) {
