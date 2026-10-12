@@ -42,8 +42,8 @@ public final class ProjectCodeSupport {
     }
 
     private static String normalizeProjectNamePrefix(String projectName) {
-        if (projectName == null) {
-            throw new IllegalArgumentException("Project name is required for untitled project codes");
+        if (projectName == null || projectName.isBlank()) {
+            return "GENERAL";
         }
 
         String normalized = projectName.trim().toUpperCase(Locale.ROOT)

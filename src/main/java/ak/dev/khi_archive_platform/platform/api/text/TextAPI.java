@@ -91,13 +91,13 @@ public class TextAPI {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('text:create')")
     public ResponseEntity<TextResponseDTO> create(
-            @RequestPart("data") String dataJson,
-            @RequestPart("file") MultipartFile textFile,
+            @RequestPart(value = "data", required = false) String dataJson,
+            @RequestPart(value = "file", required = false) MultipartFile textFile,
             @RequestPart(value = "coverImage", required = false) MultipartFile coverImage,
             Authentication auth,
             HttpServletRequest request
     ) {
-        TextCreateRequestDTO dto = parseAndValidate(dataJson, TextCreateRequestDTO.class);
+        TextCreateRequestDTO dto = dataJson == null || dataJson.isBlank() ? null : parseAndValidate(dataJson, TextCreateRequestDTO.class);
         return ResponseEntity.ok(textService.create(dto, textFile, coverImage, auth, request));
     }
 

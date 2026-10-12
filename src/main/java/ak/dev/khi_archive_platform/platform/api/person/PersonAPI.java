@@ -141,12 +141,13 @@ public class PersonAPI {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('person:create')")
     public ResponseEntity<PersonResponseDTO> create(
-            @RequestPart("data") String dataJson,
-            @RequestPart("mediaPortrait") MultipartFile mediaPortrait,
+            @RequestPart(value = "data", required = false) String dataJson,
+            @RequestPart(value = "mediaPortrait", required = false) MultipartFile mediaPortrait,
             Authentication auth,
             HttpServletRequest request
     ) {
-        PersonCreateRequestDTO dto = parseAndValidate(dataJson, PersonCreateRequestDTO.class);
+        PersonCreateRequestDTO dto = dataJson == null || dataJson.isBlank()
+                ? null : parseAndValidate(dataJson, PersonCreateRequestDTO.class);
         return ResponseEntity.ok(personService.createPerson(dto, mediaPortrait, auth, request));
     }
 

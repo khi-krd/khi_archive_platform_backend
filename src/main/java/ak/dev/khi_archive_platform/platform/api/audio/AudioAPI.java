@@ -91,12 +91,12 @@ public class AudioAPI {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('audio:create')")
     public ResponseEntity<AudioResponseDTO> create(
-            @RequestPart("data") String dataJson,
-            @RequestPart("file") MultipartFile audioFile,
+            @RequestPart(value = "data", required = false) String dataJson,
+            @RequestPart(value = "file", required = false) MultipartFile audioFile,
             Authentication auth,
             HttpServletRequest request
     ) {
-        AudioCreateRequestDTO dto = parseAndValidate(dataJson, AudioCreateRequestDTO.class);
+        AudioCreateRequestDTO dto = dataJson == null || dataJson.isBlank() ? null : parseAndValidate(dataJson, AudioCreateRequestDTO.class);
         return ResponseEntity.ok(audioService.create(dto, audioFile, auth, request));
     }
 

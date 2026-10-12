@@ -92,12 +92,12 @@ public class ImageAPI {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('image:create')")
     public ResponseEntity<ImageResponseDTO> create(
-            @RequestPart("data") String dataJson,
-            @RequestPart("file") MultipartFile imageFile,
+            @RequestPart(value = "data", required = false) String dataJson,
+            @RequestPart(value = "file", required = false) MultipartFile imageFile,
             Authentication auth,
             HttpServletRequest request
     ) {
-        ImageCreateRequestDTO dto = parseAndValidate(dataJson, ImageCreateRequestDTO.class);
+        ImageCreateRequestDTO dto = dataJson == null || dataJson.isBlank() ? null : parseAndValidate(dataJson, ImageCreateRequestDTO.class);
         return ResponseEntity.ok(imageService.create(dto, imageFile, auth, request));
     }
 

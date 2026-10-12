@@ -92,12 +92,12 @@ public class VideoAPI {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasAuthority('video:create')")
     public ResponseEntity<VideoResponseDTO> create(
-            @RequestPart("data") String dataJson,
-            @RequestPart("file") MultipartFile videoFile,
+            @RequestPart(value = "data", required = false) String dataJson,
+            @RequestPart(value = "file", required = false) MultipartFile videoFile,
             Authentication auth,
             HttpServletRequest request
     ) {
-        VideoCreateRequestDTO dto = parseAndValidate(dataJson, VideoCreateRequestDTO.class);
+        VideoCreateRequestDTO dto = dataJson == null || dataJson.isBlank() ? null : parseAndValidate(dataJson, VideoCreateRequestDTO.class);
         return ResponseEntity.ok(videoService.create(dto, videoFile, auth, request));
     }
 
